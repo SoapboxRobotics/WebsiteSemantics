@@ -1,0 +1,932 @@
+<html manifest=node.manifest>
+	<head>
+		<meta charset="utf-8">
+		<title>Blockly Demo: Arduino</title>
+		<!--script type="text/javascript" src="../blockly_compressed.js"></script-->
+		<script type="text/javascript" src="Blob.js"></script>
+		<script type="text/javascript" src="FileSaver.min.js"></script>
+		<script type="text/javascript" src="blockly_helper.js"></script>
+		<script src="js/jquery.min.js" type="text/javascript"></script>
+		<script src="js/underscore-min.js" type="text/javascript"></script>
+		<script src="js/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="js/backbone-min.js" type="text/javascript"></script>
+		<script src="js/bootstrap.min.js" type="text/javascript"></script>
+		<script src="js/compilerflasher.min.js" type="text/javascript"></script>
+		<script src="js/smoothie.min.js" type="text/javascript"></script>
+		<script src="js/tourist.js" type="text/javascript"></script>
+		<link type="text/css" rel="stylesheet" href="../../../NavBar.css" />
+
+		<script>
+			/**
+			 * List of tab names.
+			 * @private
+			 */
+			var TABS_ = ['blocks', 'xml'];
+
+			var selected = 'blocks';
+
+			/**
+			 * Switch the visible pane when a tab is clicked.
+			 * @param {string} id ID of tab clicked.
+			 */
+			function tabClick(id) {
+				// If the XML tab was open, save and render the content.
+
+				// Deselect all tabs and hide all panes.
+				for (var x in TABS_) {
+					document.getElementById('tab_' + TABS_[x]).className = 'taboff';
+					document.getElementById('content_' + TABS_[x]).style.display = 'none';
+				}
+
+				// Select the active tab.
+				selected = id.replace('tab_', '');
+				document.getElementById(id).className = 'tabon';
+				// Show the selected pane.
+				var content = document.getElementById('content_' + selected);
+				content.style.display = 'block';
+				renderContent();
+			}
+
+			/**
+			 * Populate the currently selected pane with content generated from the blocks.
+			 */
+			function renderContent() {
+				var content = document.getElementById('content_' + selected);
+				// Initialize the pane.
+				if (content.id == 'content_blocks') {
+					// If the workspace was changed by the XML tab, Firefox will have performed
+					// an incomplete rendering due to Blockly being invisible.  Rerender.
+					Blockly.mainWorkspace.render();
+				} else if (content.id == 'content_xml') {
+					var xmlTextarea = document.getElementById('textarea_xml');
+					var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+					var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+					xmlTextarea.value = xmlText;
+					xmlTextarea.focus();
+				} else if (content.id == 'content_arduino') {
+					var arduinoTextarea = document.getElementById('textarea_arduino');
+					arduinoTextarea.value = Blockly.Generator.workspaceToCode('Arduino');
+					arduinoTextarea.focus();
+				}
+			}
+
+			function blinkload() {
+				var str = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="inout_digital_write" x="106" y="53"><title name="PIN">13</title><title name="STAT">HIGH</title><next><block type="base_delay" inline="true"><value name="DELAY_TIME"><block type="math_number"><title name="NUM">1000</title></block></value><next><block type="inout_digital_write"><title name="PIN">13</title><title name="STAT">LOW</title><next><block type="base_delay" inline="true"><value name="DELAY_TIME"><block type="math_number"><title name="NUM">1000</title></block></value></block></next></block></next></block></next></block></xml>';
+				document.getElementById('blinkload').style.border = ' 1px solid darkGray';
+				document.getElementById('arduinoCode').style.border = ' 3px solid darkblue';
+				var xml = Blockly.Xml.textToDom(str);
+				Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+				document.getElementById('blinkload').value = '';
+			}
+
+			function serialReadload() {
+				var str = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="serial_read" x="106" y="146"><title name="PIN">A0</title></block><block type="base_delay" inline="true" x="107" y="178"><value name="DELAY_TIME"><block type="math_number"><title name="NUM">1000</title></block></value></block></xml>';
+				document.getElementById('blinkload').style.border = ' 1px solid darkGray';
+				//document.getElementById('arduinoCode').style.border = ' 3px solid darkblue';
+				var xml = Blockly.Xml.textToDom(str);
+				Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+				document.getElementById('blinkload').value = '';
+			}
+
+			function arduinoCode() {
+				var arduinoTextarea = document.getElementById('textarea_arduino');
+				arduinoTextarea.value = Blockly.Arduino.workspaceToCode();
+				arduinoTextarea.focus();
+
+			}
+
+			function closeTutorial() {
+				document.getElementById('tutorial').style.border = ' 1px solid darkGray';
+				document.getElementById('blinkload').style.border = ' 3px solid darkblue';
+
+			}
+
+			/**
+			 * Initialize Blockly.  Called on page load.
+			 * @param {!Blockly} blockly Instance of Blockly from iframe.
+			 */
+			function init(blockly) {
+				//window.onbeforeunload = function() {
+				//  return 'Leaving this page will result in the loss of your work.';
+				//};
+
+				window.Blockly = blockly;
+
+				// var blockly_frame = document.getElementById("content_blocks");
+				// Blockly.inject(blockly_frame, {path: '../../'});
+
+				// Make the 'Blocks' tab line up with the toolbox.
+				if (Blockly.Toolbox) {
+					window.setTimeout(function() {
+						document.getElementById('tab_blocks').style.minWidth = (Blockly.Toolbox.width - 38) + 'px';
+						// Account for the 19 pixel margin and on each side.
+					}, 1);
+				}
+
+				auto_save_and_restore_blocks();
+
+				//load from url parameter (single param)
+				//http://stackoverflow.com/questions/2090551/parse-query-string-in-javascript
+				var dest = unescape(location.search.replace(/^.*\=/, '')).replace(/\+/g, " ");
+				if (dest) {
+					load_by_url(dest);
+				}
+			}
+		</script>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link href="css/tourist.css" rel="stylesheet">
+		<style>
+			p {
+				/*position: absolute;*/
+				z-index: 99999;
+				color: black;
+				font-weight: bold;
+				font-size: 2em;
+				font-family: Roboto-Regular;
+				margin-top: 1%;
+				margin-left: 2%;
+			}
+
+			body {
+				font-family: sans-serif;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+			}
+			.blocklySvg {
+				height: 100%;
+				width: 100%;
+			}
+			h1 {
+				font-weight: normal;
+				font-size: 140%;
+				font-family: Verdana, Geneva, sans-serif;
+			}
+			h2 {
+				font-weight: normal;
+				font-size: 80%;
+			}
+
+			td {
+				vertical-align: top;
+			}
+
+			/* Tabs */
+			#tabRow > td {
+				border: none;
+			}
+
+			td.tabon {
+				padding: 5px 19px;
+			}
+			td.taboff {
+				cursor: pointer;
+			}
+			td.taboff:hover {
+			}
+			td.tabmin {
+				border-top-style: none !important;
+				border-left-style: none !important;
+				border-right-style: none !important;
+			}
+			td.tabmax {
+				border-top-style: none !important;
+				border-left-style: none !important;
+				border-right-style: none !important;
+				width: 99%;
+				text-align: right;
+			}
+
+			table {
+				border-collapse: collapse;
+				margin: 0;
+				padding: 0;
+				border: none;
+			}
+			td {
+				padding: 0;
+			}
+			pre, #content_xml {
+				height: 100%;
+				width: 50%;
+				padding: 0;
+				margin: 0;
+				border-top-style: none;
+				overflow: hidden;
+				display: hidden;
+			}
+			@font-face {
+				font-family: Roboto-Regular;
+				src: url("fonts/Roboto-Regular.ttf");
+			}
+
+			#content_arduino {
+				height: 80%;
+				width: 90%;
+				margin: 1% 5% 10% 5%;
+				bottom: 0;
+				overflow: hidden;
+				font-family: Courier, Roboto-Regular;
+				font-weight: bold;
+				padding-left: 10px;
+				color: #333333;
+				font-size: 1em;
+				background-color: #fefefe;
+				/*background-image: url("media/ArduinoWallpaper.png");*/
+				background-size: 100%;
+				z-index: 2;
+				border: 10px solid #401800;
+			}
+
+			#textarea_xml, #textarea_arduino {
+				width: 100%;
+				height: 100%;
+				border: none;
+				resize: none;
+				background-color: transparent;
+				margin: 1em auto;
+				z-index: 999;
+			}
+
+			#rightPage {
+				width: 45%;
+				height: 100%;
+				background-color: transparent;
+				margin-right: 0.5%;
+				float: right;
+				z-index: 999;
+			}
+			#leftPage {
+				background-color: transparent;
+				height: 100%;
+				width: 45%;
+				float: left;
+				margin-left: 0.5%;
+			}
+
+			iframe {
+				width: 90%;
+				height: 80%;
+				margin: 1% 5% 10% 5%;
+				background: transparent;
+				border: 10px solid #000040;
+			}
+
+			#arduinoCode {
+				background: url("media/icons/ArduinoWrite.svg");
+				background-size: 100% 100%;
+				position: absolute;
+				background-repeat: no-repeat;
+				left: 0;
+				right: 0;
+				top: 0;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 4%;
+			}
+
+			#cb_cf_verify_btn {
+				background: url("media/icons/Compile.svg");
+				background-size: 100% 100%;
+				position: absolute;
+				background-repeat: no-repeat;
+				left: 0;
+				right: 0;
+				top: 0;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 12%;
+			}
+
+			#cb_cf_flash_btn {
+				background: url("media/icons/Upload.svg");
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 20%;
+			}
+
+			#cb_cf_serial_monitor_connect {
+				background: url("media/icons/SerialMonitor.svg");
+				background-size: 100% 100%;
+				background-repeat: no-repeat;
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 28%;
+			}
+
+			.columnIcon {
+				width: 7vw;
+				height: 7vw;
+				display: block;
+				border: none;
+			}
+
+			button {
+				padding: 1px 1em;
+				background-color: #EB6841;
+				border: none;
+				color: white;
+				font-size: 1.5em;
+			}
+
+			button.launch {
+				border: none;
+				background-color: #d43;
+				color: white;
+			}
+			button:active {
+
+				border: none;
+			}
+
+			#sample-button {
+				border: 1px solid black;
+				padding: 5px 5em;
+			}
+
+			#leftBG {
+				position: absolute;
+				width: 49.8%;
+				height: 100%;
+				left: 0;
+				background-color: blue;
+				z-index: -5;
+				background-image: url('media/Textures/shattered.png');
+			}
+			#rightBG {
+				position: absolute;
+				width: 49.8%;
+				height: 100%;
+				right: 0;
+				background-color: #ff6000;
+				z-index: -5;
+				background-image: url('media/Textures/shattered.png');
+			}
+
+			#tab_blocks, #tab_xml {
+				visibility: hidden;
+			}
+
+			#drawer {
+				position: absolute;
+				top: -300px;
+				width: 100%;
+				height: 300px;
+				opacity: 0.8;
+				background-color: black;
+				z-index: 9999;
+			}
+
+			#save {
+				width: 100px;
+				height: 100px;
+				background: transparent url("media/icons/Save.svg");
+				z-index: 999999;
+			}
+
+			#fakeload {
+				width: 100px;
+				height: 100px;
+				background: transparent url("media/icons/Load.svg");
+				z-index: 999999;
+			}
+
+			#discard {
+				width: 100px;
+				height: 100px;
+				background: transparent url("media/icons/Discard.svg");
+			}
+
+			#tutorial {
+				width: 155px;
+				height: 100px;
+				background: transparent url('media/icons/Tutorial.svg');
+				background-repeat: no-repeat;
+			}
+
+			.drawerButton {
+				z-index: 99999;
+				margin-left: 50px;
+			}
+
+			.drawerButton:hover {
+				background-color: black;
+			}
+
+			#drawer button:first-child {
+				margin-left: 200px;
+			}
+
+			#drawer select:first-child {
+				margin-left: 210px;
+			}
+
+			select {
+				margin-top: 40px;
+				margin-left: 80px;
+				color: white;
+				background-color: black;
+				border: 1px solid darkgrey;
+				font-size: 1.5em;
+				font-family: Roboto-Regular;
+			}
+
+			select: nth-child(2) {
+				width: 300px;
+			}
+
+			.drawerToggle {
+				width: 50px;
+				height: 50px;
+				top: 0;
+				background: transparent url("media/icons/Drawer.svg");
+				background-size: 100%;
+				left: 30px;
+				position: absolute;
+			}
+
+			#file {
+				width: 100px;
+				height: 100px;
+				background: transparent url("media/icons/FileIcon.svg");
+				background-size: 100%;
+				display: inline;
+				margin-left: 100px;
+			}
+
+			.modal a {
+				text-decoration: underline;
+				color: blue;
+			}
+
+			.navBar a {
+				text-decoration: none;
+			}
+
+			.modal.in {
+				display: block;
+			}
+
+			#cb_cf_boards {
+				width: 30vw;
+			}
+
+			#flaticonAttr a {
+				color: lightblue;
+			}
+
+			#start {
+				background-image: url('media/StartArrow.svg');
+				width: 145.22px;
+				height: 104.86px;
+				background-size: 100%;
+				position: absolute;
+				left: 45px;
+				top: 50px;
+			}
+
+		</style>
+	</head>
+	<body>
+
+		<div id="drawer">
+			<div id="settingsDrawer" style="border-bottom: 2px solid grey; height: 100px;">
+				<select id="cb_cf_ports" class="tour-block"></select>
+				<select id="cb_cf_boards" ></select>
+				<select id="cb_cf_baud_rates"></select>
+			</div>
+			<div id="fileDrawer" style="border-bottom: 2px solid grey; height: 100px; ">
+
+				<tr style="display:inline-block">
+					<td></td>
+					<td>
+					<button  id="save" class="drawerButton" onclick="save()">
+						<!-- Save -->
+					</button></td>
+					<td>
+					<button class="drawerButton" id="fakeload" >
+						<!-- Load -->
+					</button></td>
+
+					<td>
+					<button id="discard" class="drawerButton" onclick="discard()">
+						<!-- Discard -->
+					</button></td>
+					<input type="file" id="load" style="display: none;"/>
+				</tr>
+
+			</div>
+			<div id="examplesDrawer">
+				<tr style="display:inline-block">
+					<td></td>
+					<td>
+					<button id="tutorial" class="drawerButton" onclick="startTour()" style="font-size:3vw; text-align: right; vertical-align: bottom; font-weight: bolder">
+						<!-- Tutorial -->
+					</button></td>
+
+				</tr>
+			</div>
+
+		</div>
+
+		<div id="compilerBody">
+			<div id="leftBG"></div>
+			<div id="rightBG"></div>
+
+			<div id="start">
+
+			</div>
+
+			<div>
+				<td></td>
+			</div>
+			<div class="navBar">
+				<div id="navBarBG">
+					<tr>
+						<td><a href="http://blog.soapboxrobotics.com" class="navButton" >Blog</a></td>
+						<td><a href="#" class="navButton" id="projNav">Projects</a></td>
+						<td><a href="index.html" class="navButton" id="compiler">Compiler</a></td>
+						<td><a href="../../../aboutus.html"class="navButton">About Us</a></td>
+					</tr>
+				</div>
+				<a href="http://www.soapboxrobotics.com/" id="homeLink"></a>
+			</div>
+			<button  class="drawerToggle drawerClosed"></button>
+
+			<!-- Modal -->
+			<div class="modal fade" id="startupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<p id="status">
+								Reminder
+							</p>
+						</div>
+						<div class="modal-body">
+							<p>
+								Please <a href="https://codebender.cc/static/plugin">Install</a>
+								Codebender plugin.
+								<br>
+								<br>
+								Arduino Upload & Serial Monitor are disabled
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="serial_disconnect" data-toggle="modal" data-dismiss="modal">
+								OK
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Serial Modal -->
+			<div class="modal fade" id="serialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<canvas id="mycanvas" width="500" height="200"></canvas>
+						</div>
+						<div class="modal-body">
+							<textarea id="textarea_serialTest"></textarea>
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="serial_disconnect" data-toggle="modal" data-dismiss="modal">
+								Disconnect
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Verify Modal -->
+			<div class="modal fade" id="verifyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<p id="status">
+								Compiling
+							</p>
+						</div>
+						<div class="modal-body">
+							<p id="verify_modal_output"></p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="close_status" data-toggle="modal" data-dismiss="modal">
+								OK
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Flash Modal -->
+			<div class="modal fade" id="flashModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<p id="status">
+								Uploading
+							</p>
+						</div>
+						<div class="modal-body">
+							<p id="flash_modal_output"></p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="close_status" data-toggle="modal" data-dismiss="modal">
+								OK
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<table height="100%" width="100%">
+				<td>
+				<table>
+					<tr id="tabRow">
+						<td id="tab_blocks" class="taboff"  onclick="tabClick(this.id)">Blockly</td>
+						<td id="tab_xml" class="taboff"  onclick="tabClick(this.id)">XML</td>
+						<td class="tabmin">
+						<button class="columnIcon" id="arduinoCode" onclick="arduinoCode()" title="Write" class="tour-block">
+							<!-- Arduino -->
+						</button>
+						<button class="columnIcon" id="cb_cf_verify_btn" data-toggle="modal" data-target="#verifyModal" title="Compile" >
+							<!-- Compile the Code! -->
+						</button>
+						<button class="columnIcon" id="cb_cf_flash_btn" data-toggle="modal" data-target="#flashModal" title="Compile and Flash" >
+							<!-- Compile and Flash! -->
+						</button>
+						<button class="columnIcon" id="cb_cf_serial_monitor_connect" data-toggle="modal" data-target="#serialModal" title="Serial Monitor">
+							<!-- Open Serial Monitor -->
+						</button></td>
+
+				</td>
+			</table></td>
+			</tr>
+			<tr >
+				<div id="leftPage" >
+					<iframe id="content_blocks" src="frame.html" align="left" ></iframe>
+				</div>
+				<div id="rightPage">
+					<div id="content_arduino">
+						<textarea id="textarea_arduino" ></textarea>
+					</div>
+				</div>
+				<div id="content_xml">
+					<textarea id="textarea_xml" readonly></textarea>
+				</div></td>
+			</tr>
+
+			<tr>
+				<td><!-- <div id="serialTest">
+				<textarea id="textarea_serialTest"></textarea>
+				</div></td> -->
+			</tr>
+			<tr>
+				<!-- <td><canvas id="mycanvas" width="400" height="100"></canvas></td> -->
+			</tr>
+			</table>
+
+			<div id="flaticonAttr" style="position:absolute; bottom: 0; color: white !important; font-family: Roboto-Regular; font-size:0.75vw;">
+				Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>
+			</div>
+
+		</div>
+
+		<script type="text/javascript">
+			function getFiles() {
+				return {
+					"sketch.ino" : $("#textarea_arduino").val()
+				}
+			}
+
+			function startTour() {
+				var steps = [{
+					content : '<h>Select Port</h><br><p style="font-weight:regular">Select the communication port your Arduino is connected to</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#cb_cf_ports'),
+					my : 'left top',
+					at : 'right center'
+				}, {
+					content : '<h>Select Board Type</h><br><p>Select your Arduino from this menu<br><br>Default: Arduino Uno</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#cb_cf_boards'),
+					my : 'left top',
+					at : 'right center'
+				}, {
+					content : '<h>Select Baud Rate</h><br><p>Select the baud rate you want to connect with your Arduino. If you are not sure, you can leave it at 19200<br><br>Defaut: 19200</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					closeButton : true,
+					target : $('#cb_cf_baud_rates'),
+					my : 'left top',
+					at : 'right center'
+				}, {
+					content : '<h>Save Blocks</h><br><p>Download and save the blocks from the canvas to your local drive (XML File)</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#save'),
+					my : 'left center',
+					at : 'right center'
+				}, {
+					content : '<h>Load Blocks</h><br><p>Load the XML file from a previous session to generate saved blocks in the canvas</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#fakeload'),
+					my : 'left center',
+					at : 'right center'
+				}, {
+					content : '<h>Remove Blocks</h><br><p>Clear the existing the blocks from the canvas</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#discard'),
+					my : 'left center',
+					at : 'right center'
+				}, {
+					content : '<h>Block Canvas</h><br><p>Drag & Drop blocks in the canvas to start programming</p><br><p><b>Challenge</b></p><p>Try it with an LED. If you do not have one, try blinking the Arduino LED located just under digital pin 13</p><br><p><b>Hint</b></p><iframe width="250px" height="400px" style="margin-left: 10px; border: none; width: 250px; height: 300px;" src="https://www.youtube.com/embed/KrKriOKx5lo" frameborder="0" allowfullscreen></iframe><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#content_blocks'),
+					my : 'left center',
+					at : 'right center',
+					setup : function(tour, options) {
+						$('#drawer').animate({
+							top : "-300px"
+						}, 500);
+						$('.drawerToggle').animate({
+							top : "0px"
+						}, 500);
+					},
+					teardown : function(tour, options) {
+						$('.drawerToggle').addClass('drawerClosed');
+						$('.drawerToggle').removeClass('drawerOpened');
+					}
+				}, {
+					content : '<h>Arduino code</h><br><p>Click here to convert the blocks in the canvas to Arduino code</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#arduinoCode'),
+					my : 'right center',
+					at : 'left center'
+				}, {
+					content : '<h>Arduino Code</h><br><p>Your blocks have now been converted to a language your Arduino can recognize</p><br><p>Take a minute to compare how the code is structured in Arduino compared to your blocks in the Canvas</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#content_arduino'),
+					my : 'right center',
+					at : 'left center'
+				}, {
+					content : '<h>Compile</h><br><p>Click here to compile the code</p><br><p>This checks if there are errors in your code</p><br>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#cb_cf_verify_btn'),
+					my : 'left center',
+					at : 'right center'
+				}, {
+					content : '<h>Upload to Arduino</h><br><p>If everything compiles properly, you may now upload your program into your Arduino</p><br><br><p>Click here to upload</p>',
+					highlightTarget : true,
+					okButton : true,
+					nextButton : true,
+					target : $('#cb_cf_flash_btn'),
+					my : 'left center',
+					at : 'right center'
+				}, {
+					content : '<h>Serial Monitor</h><br><p>Finally, if you you want to view serial information from the Arduino, click here to open the Serial Monitor</p><br>',
+					highlightTarget : true,
+					nextButton : true,
+					target : $('#cb_cf_serial_monitor_connect'),
+					my : 'left center',
+					at : 'right center'
+				}]
+				var tour = new Tourist.Tour({
+					steps : steps,
+					tipClass : 'Bootstrap',
+					tipOptions : {
+						showEffect : 'slidein'
+					}
+				});
+				tour.start();
+			}
+
+
+			$(document).ready(function() {
+				var drawerToggleAnimation = setInterval(function() {
+					$('#start').animate({
+						opacity : "0.1"
+					}, 600, function() {
+						$('#start').animate({
+							opacity : "1"
+						}, 500);
+					});
+				}, 1000);
+				compilerflasher = new compilerflasher(getFiles);
+
+				$('#compiler').mouseover(function() {
+					$('#compiler').html('Refresh');
+				});
+
+				$('#compiler').mouseout(function() {
+					$('#compiler').html("Compiler");
+				});
+
+				$('#projNav').mouseover(function() {
+					$('#projNav').html('Coming Soon');
+				});
+
+				$('#projNav').mouseout(function() {
+					$('#projNav').html("Projects");
+				});
+
+				$('.drawerToggle').on('click', function() {
+
+					clearInterval(drawerToggleAnimation);
+					if ($(this).hasClass('drawerClosed')) {
+						$('#start').hide();
+						$('#drawer').animate({
+							top : "0px"
+						}, 500);
+						$('.drawerToggle').animate({
+							top : "+=300px"
+						}, 500);
+						$(this).addClass('drawerOpened');
+						$(this).removeClass('drawerClosed');
+					} else {
+						$('#drawer').animate({
+							top : "-300px"
+						}, 500);
+						$('.drawerToggle').animate({
+							top : "0px"
+						}, 500);
+						$(this).addClass('drawerClosed');
+						$(this).removeClass('drawerOpened');
+					}
+				});
+
+				$('#compilerBody').on('click', function(event) {
+					if (!$(event.target).closest('.drawerToggle').length) {
+						$('#drawer').animate({
+							top : "-300px"
+						}, 500);
+						$('.drawerToggle').animate({
+							top : "0px"
+						}, 500);
+
+						if ($('.drawerToggle').hasClass('drawerOpened')) {
+							$('.drawerToggle').addClass('drawerClosed');
+							$('.drawerToggle').removeClass('drawerOpened');
+						}
+					}
+
+				});
+			});
+
+			function serialRead() {
+				document.getElementById('serialTest').value = compilerflasher.comparePluginVersions(2, 1);
+			}
+
+			//tour.start();
+
+		</script>
+
+		<script>
+			(function(i, s, o, g, r, a, m) {
+				i['GoogleAnalyticsObject'] = r;
+				i[r] = i[r] ||
+				function() {
+					(i[r].q = i[r].q || []).push(arguments)
+				}, i[r].l = 1 * new Date();
+				a = s.createElement(o),
+				m = s.getElementsByTagName(o)[0];
+				a.async = 1;
+				a.src = g;
+				m.parentNode.insertBefore(a, m)
+			})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+			ga('create', 'UA-60016233-1', 'auto');
+			ga('send', 'pageview');
+
+		</script>
+	</body>
+</html>

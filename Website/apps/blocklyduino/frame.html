@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Code</title>
+		<script type="text/javascript" src="../../blockly_compressed.js"></script>
+  		<script type="text/javascript" src="../../blocks_compressed.js"></script>
+  		<script type="text/javascript" src="../../arduino_compressed.js"></script>
+  		<script type="text/javascript" src="../../msg/js/en.js"></script>
+
+		<style>
+			html, body {
+
+				margin: 0;
+				overflow: hidden;
+			}
+			body {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			
+			.blocklySvg {
+				height: 100%;
+				width: 100%;
+			}
+		</style>
+		<script>
+			function init() {
+				var toolbox = document.getElementById('toolbox');
+				Blockly.inject(document.body, 
+						{grid:
+				          {spacing: 25,
+				           length: 3,
+				           colour: '#ccc',
+				           snap: true},
+				       media: '../../media/',
+				       toolbox: toolbox});
+
+				if (window.parent.init) {
+					// Let the top-level application know that Blockly is ready.
+					window.parent.init(Blockly);
+				} else {
+					// Attempt to diagnose the problem.
+					var msg = 'Error: Unable to communicate between frames.\n\n';
+					if (window.parent == window) {
+						msg += 'Try loading index.html instead of frame.html';
+					} else if (window.location.protocol == 'file:') {
+						msg += 'This may be due to a security restriction preventing\n' + 'access when using the file:// protocol.\n' + 'http://code.google.com/p/chromium/issues/detail?id=47416';
+					}
+					alert(msg);
+				}
+			}
+		</script>
+	</head>
+	<body onload="init()"></body>
+	 <xml id="toolbox" style="display: none">
+    <category name="Input">        
+      <block type="inout_digital_read"></block>
+      <block type="inout_analog_read"></block>
+    </category>
+    <category name="Output">
+    	<block type="inout_digital_write"></block>
+		<block type="inout_analog_write"></block>
+		<block type="inout_buildin_led"></block>
+    </category>
+    <category name="Constant">
+    	<block type="inout_highlow"></block>  
+		<block type="math_number"></block>
+    </category>
+    <category name="Time">
+		<block type="base_delay"></block>
+    </category>
+    <category name="Logic">
+    	<block type="controls_if"></block>
+    </category>
+    <category name="Comparison">
+		<block type="logic_compare"></block> 
+    </category>
+    <category name="Boolean">
+		<block type="logic_operation"></block>
+		<block type="logic_negate"></block>
+    </category>
+ 	<category name="Loop">
+ 		<block type="controls_for">
+        <value name="FROM">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+        <value name="TO">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_flow_statements"></block>
+    </category>
+    <category name="Communication">
+          <block type="serial_print"></block>
+    </category>
+    <category name="Math">
+		<block type="base_map"></block>
+		<block type="math_prefix"></block>
+		<block type="math_arithmetic"></block>
+    </category>
+    <category name="Tone">
+    	<block type="tone_duration"></block>
+    	<block type="tone_noduration"></block>
+    	<block type="notone"></block>
+    </category>
+    <category name="Servo">
+      <block type="servo_move"></block>
+      <block type="servo_read_degrees"></block>
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+ <!--<category name="Functions" custom="PROCEDURE"></category>-->
+  </xml>
+	
+</html>
