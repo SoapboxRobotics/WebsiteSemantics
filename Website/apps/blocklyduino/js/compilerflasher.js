@@ -970,14 +970,23 @@ compilerflasher = function(lf){
     {
         this.loaded_elements.push("cb_cf_operation_output");
     }
-    if($("button#cb_cf_verify_btn").length > 0)
+    if($("button#cb_cf_verify_btn_blocks").length > 0)
     {
-        $("#cb_cf_verify_btn").click(function(){
+        $("#cb_cf_verify_btn_blocks").click(function(){
         	arduinoCode();
         	cb.verify();
         	$('#verifyModal').modal('show');
         });
-        this.loaded_elements.push("cb_cf_verify_btn");
+        this.loaded_elements.push("cb_cf_verify_btn_blocks");
+    }
+    if($("button#cb_cf_verify_btn_text").length > 0)
+    {
+        $("#cb_cf_verify_btn_text").click(function(){
+            arduinoCode();
+            cb.verify();
+            $('#verifyModal').modal('show');
+        });
+        this.loaded_elements.push("cb_cf_verify_btn_text");
     }
     if($("select#cb_cf_boards").length > 0)
     {
@@ -999,15 +1008,25 @@ compilerflasher = function(lf){
 
         this.loaded_elements.push("cb_cf_ports");
     }
-    if($("button#cb_cf_flash_btn").length > 0)
+    if($("button#cb_cf_flash_btn_blocks").length > 0)
     {
-        $("#cb_cf_flash_btn")
+        $("#cb_cf_flash_btn_blocks")
                 .click(function(){            	
                 	$('#flashModal').modal('show');
                 	cb.usbflash();
                 });
                 //.attr("disabled", "disabled");;
-        this.loaded_elements.push("cb_cf_flash_btn");
+        this.loaded_elements.push("cb_cf_flash_btn_blocks");
+    }
+    if($("button#cb_cf_flash_btn_text").length > 0)
+    {
+        $("#cb_cf_flash_btn_text")
+                .click(function(){              
+                    $('#flashModal').modal('show');
+                    cb.usbflash();
+                });
+                //.attr("disabled", "disabled");;
+        this.loaded_elements.push("cb_cf_flash_btn_text");
     }
     if($("select#cb_cf_programmers").length > 0)
     {
@@ -1479,11 +1498,13 @@ compilerflasher = function(lf){
     this.serial_monitor_disabled = false;
     this.disableCompilerFlasherActions = function(){
         $("#cb_cf_boards").attr("disabled", "disabled");
-        $("#cb_cf_verify_btn").attr("disabled", "disabled");
+        $("#cb_cf_verify_btn_blocks").attr("disabled", "disabled");
+        $("#cb_cf_verify_btn_text").attr("disabled", "disabled");
         if(compilerflasher.pluginHandler.plugin_running)
         {
             $("#cb_cf_ports").attr("disabled", "disabled");
-            $("#cb_cf_flash_btn").attr("disabled", "disabled");
+            $("#cb_cf_flash_btn_blocks").attr("disabled", "disabled");
+            $("#cb_cf_flash_btn_text").attr("disabled", "disabled");
             $("#cb_cf_programmers").attr("disabled", "disabled");
             $("#cb_cf_flash_with_prog_btn").attr("disabled", "disabled");
             $("#cb_cf_baud_rates").attr("disabled", "disabled");
@@ -1495,11 +1516,13 @@ compilerflasher = function(lf){
 
     this.enableCompilerFlasherActions = function(){
         $("#cb_cf_boards").removeAttr("disabled");
-        $("#cb_cf_verify_btn").removeAttr("disabled");
+        $("#cb_cf_verify_btn_text").removeAttr("disabled");
+        $("#cb_cf_verify_btn_blocks").removeAttr("disabled");
         if(compilerflasher.pluginHandler.plugin_running)
         {
             $("#cb_cf_ports").removeAttr("disabled");
-            $("#cb_cf_flash_btn").removeAttr("disabled");
+            $("#cb_cf_flash_btn_text").removeAttr("disabled");
+            $("#cb_cf_flash_btn_blocks").removeAttr("disabled");
             $("#cb_cf_programmers").removeAttr("disabled");
             $("#cb_cf_flash_with_prog_btn").removeAttr("disabled");
             $("#cb_cf_baud_rates").removeAttr("disabled");
