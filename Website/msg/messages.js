@@ -1122,3 +1122,7 @@ Blockly.Msg.PROCEDURES_CREATE_DO = 'Create "%1"';
 Blockly.Msg.PROCEDURES_IFRETURN_TOOLTIP = 'If a value is true, then return a second value.';
 /// warning - This appears if the user tries to use this block outside of a function definition.
 Blockly.Msg.PROCEDURES_IFRETURN_WARNING = 'Warning: This block may be used only within a function definition.';
+
+/// Time Millis url
+Blockly.Msg.TIME_MILLIS_HELPURL = 'http://arduino.cc/en/reference/millis';
+Blockly.Msg.TIME_MILLIS_TOOLTIP = 'millis';

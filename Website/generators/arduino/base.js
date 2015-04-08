@@ -162,3 +162,53 @@ Blockly.Arduino.notone = function() {
   var code = 'noTone(' +dropdown_pin+ ');\n';
   return code;
 };
+
+Blockly.Arduino.bool_truefalse = function() {
+  // Boolean values HIGH and LOW.
+  var code = (this.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino.time_millis = function() {
+  // Boolean values HIGH and LOW.
+  var code = 'millis();';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino.DHTInit = function() {
+
+  var DHTpin = Blockly.Arduino.valueToCode(this, 'DHTPIN', Blockly.Arduino.ORDER_ATOMIC) || '0';
+  var DHTtype= Blockly.Arduino.valueToCode(this, 'DHTTYPE', Blockly.Arduino.ORDER_ATOMIC) || '0';
+  Blockly.Arduino.definitions_['define_DHT'] = '#include "DHT.h"\n';
+  Blockly.Arduino.definitions_['define_DHTPIN'] = '#define DHTPIN ' + DHTpin + '\n';
+  Blockly.Arduino.definitions_['define_DHTTYPE'] = '#define DHTTYPE DHT' + DHTtype + '\n';
+  Blockly.Arduino.definitions_['define_DHTINIT'] = 'DHT dht(DHTPIN, DHTTYPE);\n';
+  Blockly.Arduino.setups_['setup_DHT'] = 'dht.begin();\n'; 
+  var code = '';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino.DHT_ReadHumidity = function() {
+  // Boolean values HIGH and LOW.
+  var code = 'dht.readHumidity()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+Blockly.Arduino.DHT_ReadTemperatureC = function() {
+  // Boolean values HIGH and LOW.
+  var code = 'dht.readTemperature()';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+	
+Blockly.Arduino.DHT_ReadTemperatureF = function() {
+  // Boolean values HIGH and LOW.
+  var code = 'dht.readTemperature(true)';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino.DHT_ComputeHeatIndex = function() {
+  // Boolean values HIGH and LOW.
+  var arg0 = Blockly.Arduino.valueToCode(this, 'TEMP',Blockly.Arduino.ORDER_NONE) || '0';
+  var arg1 = Blockly.Arduino.valueToCode(this, 'HUM',Blockly.Arduino.ORDER_NONE) || '0';
+  var code = 'dht.computeHeatIndex(' + arg0 + ',' + arg1 + ')';
+  return [code, Blockly.Arduino.ORDER_ATOMIC];
+};

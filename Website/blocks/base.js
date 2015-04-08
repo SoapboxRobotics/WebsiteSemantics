@@ -91,6 +91,24 @@ Blockly.Blocks['inout_digital_write'] = {
   }
 };
 
+Blockly.Blocks['inout_digital_write_var'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/DigitalWrite',
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+    	.appendField("DigitalWrite")
+    this.appendValueInput("PIN", 'Number')
+    	.appendField("DigitalWrite PIN#")
+    	.setCheck('Number')
+    this.appendField("Stat")
+      	.appendField(new Blockly.FieldDropdown([["HIGH", "HIGH"], ["LOW", "LOW"]]), "STAT")
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('Write digital value to a specific Port');
+  }
+};
+
 Blockly.Blocks['inout_digital_read'] = {
   helpUrl: 'http://arduino.cc/en/Reference/DigitalRead',
   init: function() {
@@ -252,3 +270,124 @@ Blockly.Blocks['notone'] = {
     this.setTooltip('Write Tone to a PIN with frequency and delay');
   }
 };
+
+Blockly.Blocks['bool_truefalse'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/Constants',
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown([["TRUE", "TRUE"], ["FALSE", "FALSE"]]), 'BOOL')
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('');
+  }
+};
+
+Blockly.Blocks['time_millis'] = {
+  /**
+   * Block for numeric value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setHelpUrl(Blockly.Msg.TIME_MILLIS_HELPURL);
+    this.setColour(Blockly.Blocks.math.HUE);
+    this.appendDummyInput()
+        .appendField("millis");
+    this.setOutput(true, 'Number');
+    this.setTooltip(Blockly.Msg.TIME_MILLIS_TOOLTIP);
+  }
+};
+
+//DHT Blocks
+
+Blockly.Blocks['DHTInit'] = {
+  /**
+   * Block for numeric value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    //this.setHelpUrl(Blockly.Msg.TIME_MILLIS_HELPURL);
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField("DHT");
+    this.appendValueInput("DHTPIN", 'Number')
+    	.appendField("DHT PIN #")
+    	.setCheck('Number');
+    this.appendValueInput("DHTTYPE", 'Number')
+    	.appendField("DHT TYPE")
+    	.setCheck('Number');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('DHT');
+  }
+};
+
+Blockly.Blocks['DHT_ReadHumidity'] = {
+  /**
+   * Block for numeric value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    //this.setHelpUrl(Blockly.Msg.TIME_MILLIS_HELPURL);
+    this.setColour(150);
+    this.appendDummyInput()
+        .appendField("Read Humidity");
+    this.setOutput(true, 'Number');
+    //this.setTooltip(Blockly.Msg.TIME_MILLIS_TOOLTIP);
+  }
+};
+
+Blockly.Blocks['DHT_ReadTemperatureC'] = {
+  /**
+   * Block for numeric value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    //this.setHelpUrl(Blockly.Msg.TIME_MILLIS_HELPURL);
+    this.setColour(150);
+    this.appendDummyInput()
+        .appendField("Read Temperature in Celcius (C)");
+    this.setOutput(true, 'Number');
+    //this.setTooltip(Blockly.Msg.TIME_MILLIS_TOOLTIP);
+  }
+};
+
+Blockly.Blocks['DHT_ReadTemperatureF'] = {
+  /**
+   * Block for numeric value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    //this.setHelpUrl(Blockly.Msg.TIME_MILLIS_HELPURL);
+    this.setColour(150);
+    this.appendDummyInput()
+        .appendField("Read Temperature in Fahrenheit (F)");
+    this.setOutput(true, 'Number');
+    //this.setTooltip(Blockly.Msg.TIME_MILLIS_TOOLTIP);
+  }
+};
+
+Blockly.Blocks['DHT_ComputeHeatIndex'] = {
+  /**
+   * Block for numeric value.
+   * @this Blockly.Block
+   */
+  init: function() {
+    //this.setHelpUrl(Blockly.Msg.TIME_MILLIS_HELPURL);
+    this.setColour(150);
+
+    this.appendValueInput("TEMP", 'Number')
+    	.appendField("Temperature (F)")
+    	.setCheck('Number');
+    this.appendValueInput("HUM", 'Number')
+    	.appendField("Humidity")
+    	.setCheck('Number');
+    this.setInputsInline(true);
+    this.setOutput(true, 'Number');
+    this.setTooltip('DHT');
+  }
+};
+
+
+
+
