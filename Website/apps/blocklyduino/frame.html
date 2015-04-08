@@ -112,82 +112,17 @@
 		</head>
 		<body onload="init()"></body>
 		<xml id="toolbox" style="display: none">
-			<category name="Input">        
-				<block type="inout_digital_read"></block>
-				<block type="inout_analog_read"></block>
-			</category>
-			<category name="Output">
-				<block type="inout_digital_write"></block>
-				<block type="inout_analog_write"></block>
-				<block type="inout_buildin_led"></block>
-			</category>
-			<category name="Constant">
-				<block type="inout_highlow"></block>  
-				<block type="math_number"></block>
-			</category>
-			<category name="Time">
-				<block type="base_delay"></block>
-			</category>
-			<category name="Logic">
-				<block type="controls_if"></block>
-			</category>
-			<category name="Comparison">
-				<block type="logic_compare"></block> 
-			</category>
-			<category name="Boolean">
-				<block type="logic_operation"></block>
-				<block type="logic_negate"></block>
-			</category>
-			<category name="Loop">
-				<block type="controls_for">
-					<value name="FROM">
-						<block type="math_number">
-							<field name="NUM">1</field>
-						</block>
-					</value>
-					<value name="TO">
-						<block type="math_number">
-							<field name="NUM">10</field>
-						</block>
-					</value>
-				</block>
-				<block type="controls_whileUntil"></block>
-				<block type="controls_flow_statements"></block>
-			</category>
-			<category name="Communication">
-				<block type="serial_print"></block>
-			</category>
-			<category name="Math">
-				<block type="base_map"></block>
-				<block type="math_prefix"></block>
-				<block type="math_arithmetic"></block>
-			</category>
-			<category name="Tone">
-				<block type="tone_duration"></block>
-				<block type="tone_noduration"></block>
-				<block type="notone"></block>
-			</category>
-			<category name="Servo">
-				<block type="servo_move"></block>
-				<block type="servo_read_degrees"></block>
-			</category>
-			<category name="Variables" custom="VARIABLE"></category>
-			<!--<category name="Functions" custom="PROCEDURE"></category>-->
-		</xml>
-
-		</html>
-
-		</script>
-	</head>
-	<body onload="init()"></body>
-	 <xml id="toolbox" style="display: none">
     <category name="Input">        
       <block type="inout_digital_read"></block>
-      <block type="inout_analog_read"></block>
+      <block type="inout_digital_read_var"></block>
+	  <block type="inout_analog_read"></block>
+	  <block type="inout_analog_read_var"></block>
     </category>
     <category name="Output">
     	<block type="inout_digital_write"></block>
+    	<block type="inout_digital_write_var"></block>
 		<block type="inout_analog_write"></block>
+		<block type="inout_analog_write_var"></block>
 		<block type="inout_buildin_led"></block>
     </category>
     <category name="Constant">
@@ -251,5 +186,5 @@
     </category>
  <!--<category name="Functions" custom="PROCEDURE"></category>-->
   </xml>
-	
+
 </html>

@@ -95,13 +95,12 @@ Blockly.Blocks['inout_digital_write_var'] = {
   helpUrl: 'http://arduino.cc/en/Reference/DigitalWrite',
   init: function() {
     this.setColour(230);
-    this.appendDummyInput()
-    	.appendField("DigitalWrite")
     this.appendValueInput("PIN", 'Number')
-    	.appendField("DigitalWrite PIN#")
-    	.setCheck('Number')
-    this.appendField("Stat")
-      	.appendField(new Blockly.FieldDropdown([["HIGH", "HIGH"], ["LOW", "LOW"]]), "STAT")
+    	.appendField("Digital Write Pin Variable")
+    	.setCheck('Number');
+    this.appendDummyInput()
+    	.appendField("Stat")
+      	.appendField(new Blockly.FieldDropdown([["HIGH", "HIGH"], ["LOW", "LOW"]]), "STAT");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -121,13 +120,42 @@ Blockly.Blocks['inout_digital_read'] = {
   }
 };
 
+Blockly.Blocks['inout_digital_read_var'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/DigitalRead',
+  init: function() {
+    this.setColour(230);
+    this.appendValueInput("PIN", 'Number')
+		.appendField("Digital Read Pin Variable")
+		.setCheck('Number');
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('');
+  }
+};
+
 Blockly.Blocks['inout_analog_write'] = {
   helpUrl: 'http://arduino.cc/en/Reference/AnalogWrite',
   init: function() {
-    this.setColour(230);
+	this.setColour(230);
     this.appendDummyInput()
         .appendField("AnalogWrite PIN#")
         .appendField(new Blockly.FieldDropdown(profile.default.analog), "PIN");
+    this.appendValueInput("NUM", 'Number')
+        .appendField("value")
+        .setCheck('Number');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('Write analog value between 0 and 255 to a specific Port');
+  }
+};
+
+Blockly.Blocks['inout_analog_write_var'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/AnalogWrite',
+  init: function() {
+    this.setColour(230);
+    this.appendValueInput("PIN", 'Number')
+		.appendField("Analog Write Pin Variable")
+		.setCheck('Number');
     this.appendValueInput("NUM", 'Number')
         .appendField("value")
         .setCheck('Number');
@@ -145,6 +173,18 @@ Blockly.Blocks['inout_analog_read'] = {
     this.appendDummyInput()
         .appendField("AnalogRead PIN#")
         .appendField(new Blockly.FieldDropdown(profile.default.analog), "PIN");
+    this.setOutput(true, 'Number');
+    this.setTooltip('Return value between 0 and 1024');
+  }
+};
+
+Blockly.Blocks['inout_analog_read_var'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/AnalogRead',
+  init: function() {
+    this.setColour(230);
+    this.appendValueInput("PIN", 'Number')
+		.appendField("Analog Read Pin Variable")
+		.setCheck('Number');
     this.setOutput(true, 'Number');
     this.setTooltip('Return value between 0 and 1024');
   }
