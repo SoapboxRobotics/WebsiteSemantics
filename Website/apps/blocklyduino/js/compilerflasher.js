@@ -108,20 +108,20 @@ compilerflasher = function(lf){
         this.doflashBootloader = function(programmer, board)
         {
             document.getElementById('plugin0').flashBootloader(
-                    (this.portslist.selectedIndex == -1 || programmer['communication'] != 'serial')?'':this.portslist.options[this.portslist.selectedIndex].text,
-                    programmer['protocol'],
-                    programmer['communication'],
-                    programmer['speed'],
-                    programmer['force'],
-                    programmer['delay'],
-                    board['bootloader']['high_fuses'],
-                    board['bootloader']['low_fuses'],
-                    (typeof board['bootloader']['extended_fuses'] === "undefined")?'':board['bootloader']['extended_fuses'],
-                    (typeof board['bootloader']['unlock_bits'] === "undefined")?'':board['bootloader']['unlock_bits'],
-                    (typeof board['bootloader']['lock_bits'] === "undefined")?'':board['bootloader']['lock_bits'],
-                    board['build']['mcu'],
-                    bootloader_callback
-            );
+                (this.portslist.selectedIndex == -1 || programmer['communication'] != 'serial')?'':this.portslist.options[this.portslist.selectedIndex].text,
+                programmer['protocol'],
+                programmer['communication'],
+                programmer['speed'],
+                programmer['force'],
+                programmer['delay'],
+                board['bootloader']['high_fuses'],
+                board['bootloader']['low_fuses'],
+                (typeof board['bootloader']['extended_fuses'] === "undefined")?'':board['bootloader']['extended_fuses'],
+                (typeof board['bootloader']['unlock_bits'] === "undefined")?'':board['bootloader']['unlock_bits'],
+                (typeof board['bootloader']['lock_bits'] === "undefined")?'':board['bootloader']['lock_bits'],
+                board['build']['mcu'],
+                bootloader_callback
+                );
         }
 
         this.clickedPort = function()
@@ -195,167 +195,167 @@ compilerflasher = function(lf){
                             }
                         });
                     });
-                }
-                else {
-                    var port = $("#cb_cf_ports option:first").val();
-                    $("#cb_cf_ports").val(port);
-                }
-            }
-            else {
-                $('#cb_cf_ports').append('<option value="">No ports detected</option>');
-            }
-        }
+}
+else {
+    var port = $("#cb_cf_ports option:first").val();
+    $("#cb_cf_ports").val(port);
+}
+}
+else {
+    $('#cb_cf_ports').append('<option value="">No ports detected</option>');
+}
+}
 
-        this.initializePlugin = function()
+this.initializePlugin = function()
+{
+    var url = '';
+    var location = ''
+    if (typeof window.location.origin === undefined)
+        location = window.location;
+    else
+        location = window.location.origin;
+    if (location.indexOf("codebender.cc") != -1 && !window.osBrowserIsSupported() )
+    {
+        url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
+        url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : false, "message": "Unsupported OS/browser combination."} ));
+        $.get(url);
+
+        if((Browsers.isOs('Mac OS X') ||  Browsers.isOs('Windows')))
         {
-            var url = '';
-            var location = ''
-            if (typeof window.location.origin === undefined)
-                location = window.location;
-            else
-                location = window.location.origin;
-            if (location.indexOf("codebender.cc") != -1 && !window.osBrowserIsSupported() )
+            this.owner.setOperationOutput('<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.');
+            this.owner.eventManager.fire('plugin_notification', '<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.')
+        }
+        else if ((Browsers.isOs('Unix') || Browsers.isOs('FreeBSD') || Browsers.isOs('OpenBSD') || Browsers.isOs('NetBSD') || Browsers.isOs('Solaris') || Browsers.isOs('Linux') ||
+            Browsers.isOs('Debian') || Browsers.isOs('Fedora') || Browsers.isOs('Gentoo') || Browsers.isOs('gNewSense') || Browsers.isOs('Kubuntu') || Browsers.isOs('Mandriva') ||
+            Browsers.isOs('Mageia') || Browsers.isOs('Red Hat') || Browsers.isOs('Slackware') || Browsers.isOs('SUSE') || Browsers.isOs('Turbolinux') || Browsers.isOs('Ubuntu')))
+        {
+            this.owner.setOperationOutput('<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome (up to version 34 on Linux)</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.');
+            this.owner.eventManager.fire('plugin_notification', '<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome (up to version 34 on Linux)</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.');
+        }
+        else
+        {
+            this.owner.setOperationOutput('<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a> from Windows, Mac or Linux.');
+            this.owner.eventManager.fire('plugin_notification','<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a> from Windows, Mac or Linux.');
+        }
+    }
+    else
+    {
+        this.plugin_searched = false;
+        this.plugin_found = false;
+        this.plugin_initialized = false;
+        this.plugin_validated = false;
+        this.plugin_running = false;
+
+        this.plugin_version = null;
+        window.plugin_version = null;
+
+        this.searchPlugin();
+
+        if (!this.plugin_found)
+        {
+         $('#startupModal').modal('show');
+         var alert = this.browserSpecificPluginInstall("To program your Arduino from your browser, install the Codebender Plugin. ");
+         this.owner.setOperationOutput(alert);
+         this.owner.eventManager.fire('plugin_notification', alert);
+
+         url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
+         url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : false, "message": "Not on navigator plugins."} ));
+         $.get(url);
+         var pl = this;
+         window.pluginSearchInterval =  setInterval(function(){
+            pl.searchPlugin();
+            if (pl.plugin_found)
             {
+                clearInterval(window.pluginSearchInterval);
+                pl.runPlugin();
+            }
+        },2000);
+         return;
+     }
+     else
+     {
+        this.runPlugin();
+    }
+
+}
+
+}
+
+this.searchPlugin = function()
+{
+    for (i = 0; i < navigator.plugins.length; i++)
+        if (navigator.plugins[i].name == "Codebender.cc" || navigator.plugins[i].name == "Codebendercc")
+            this.plugin_found = true;
+        this.plugin_searched = true;
+    }
+
+    this.runPlugin = function()
+    {
+        url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
+        url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : true, "message": "Found on navigator plugins."} ));
+        $.get(url);
+        this.owner.setOperationOutput("<i class='icon-spinner icon-spin'></i>  Initializing Plugin... Make sure that you allow plugin execution on your browser. <a href='http://codebender.uservoice.com/knowledgebase/topics/57328-plugin'>More Info</a>");
+        this.owner.eventManager.fire("plugin_notification", "<i class='icon-spinner icon-spin'></i>  Initializing Plugin... Make sure that you allow plugin execution on your browser. <a href='http://codebender.uservoice.com/knowledgebase/topics/57328-plugin'>More Info</a>");
+        $("body").append('<object id="plugin0" type="application/x-codebendercc" width="0" height="0" xmlns="http://www.w3.org/1999/html"></object>');
+
+        var pl = this;
+        window.plugin_init_interval = setInterval(function(){
+            if(typeof document.getElementById('plugin0').probeUSB !== 'undefined')
+            {
+                clearInterval(window.plugin_init_interval);
+
+                pl.plugin_initialized = true;
+                pl.plugin_version = document.getElementById('plugin0').version;
+                window.plugin_version = pl.plugin_version;
                 url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
-                url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : false, "message": "Unsupported OS/browser combination."} ));
+                url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : true, "version": document.getElementById('plugin0').version}) );
                 $.get(url);
 
-                if((Browsers.isOs('Mac OS X') ||  Browsers.isOs('Windows')))
+                pl.validateVersion(that.minVersion);
+                if (typeof document.getElementById('plugin0').setErrorCallback !== 'undefined')
+                    document.getElementById('plugin0').setErrorCallback(pl.plugin_error_logger);
+
+                if (typeof document.getElementById('plugin0').init !== 'undefined')
                 {
-                    this.owner.setOperationOutput('<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.');
-                    this.owner.eventManager.fire('plugin_notification', '<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.')
+                    document.getElementById('plugin0').init();
+                    if (document.getElementById('plugin0').instance_id != 'undefined') {
+                        pl.tabID = parseInt(document.getElementById('plugin0').instance_id);
+                    }
                 }
-                else if ((Browsers.isOs('Unix') || Browsers.isOs('FreeBSD') || Browsers.isOs('OpenBSD') || Browsers.isOs('NetBSD') || Browsers.isOs('Solaris') || Browsers.isOs('Linux') ||
-                        Browsers.isOs('Debian') || Browsers.isOs('Fedora') || Browsers.isOs('Gentoo') || Browsers.isOs('gNewSense') || Browsers.isOs('Kubuntu') || Browsers.isOs('Mandriva') ||
-                        Browsers.isOs('Mageia') || Browsers.isOs('Red Hat') || Browsers.isOs('Slackware') || Browsers.isOs('SUSE') || Browsers.isOs('Turbolinux') || Browsers.isOs('Ubuntu')))
+
+                if (typeof document.getElementById('plugin0').closeTab !== 'undefined')
                 {
-                    this.owner.setOperationOutput('<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome (up to version 34 on Linux)</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.');
-                    this.owner.eventManager.fire('plugin_notification', '<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome (up to version 34 on Linux)</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a>.');
+                    $( window ).unload(function ()
+                    {
+                        document.getElementById('plugin0').closeTab();
+                        document.getElementById('plugin0').deleteMap();
+                    });
                 }
                 else
                 {
-                    this.owner.setOperationOutput('<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a> from Windows, Mac or Linux.');
-                    this.owner.eventManager.fire('plugin_notification','<i class="icon-warning-sign"></i> To program your Arduino from your browser, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/" target="_blank">Mozilla Firefox</a> from Windows, Mac or Linux.');
-                }
-            }
-            else
-            {
-                this.plugin_searched = false;
-                this.plugin_found = false;
-                this.plugin_initialized = false;
-                this.plugin_validated = false;
-                this.plugin_running = false;
-
-                this.plugin_version = null;
-                window.plugin_version = null;
-
-                this.searchPlugin();
-
-                if (!this.plugin_found)
-                {
-                	$('#startupModal').modal('show');
-                    var alert = this.browserSpecificPluginInstall("To program your Arduino from your browser, install the Codebender Plugin. ");
-                    this.owner.setOperationOutput(alert);
-                    this.owner.eventManager.fire('plugin_notification', alert);
-
-                    url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
-                    url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : false, "message": "Not on navigator plugins."} ));
-                    $.get(url);
-                    var pl = this;
-                    window.pluginSearchInterval =  setInterval(function(){
-                        pl.searchPlugin();
-                        if (pl.plugin_found)
-                        {
-                            clearInterval(window.pluginSearchInterval);
-                            pl.runPlugin();
-                        }
-                    },2000);
-                    return;
-                }
-                else
-                {
-                    this.runPlugin();
+                    pl.disconnect();
                 }
 
             }
+        }, 100);
+}
 
-        }
+this.showPlugin = function()
+{
+    this.owner.setOperationOutput("");
+    this.owner.eventManager.fire("plugin_running");
+    $.each(this.owner.loaded_elements, function(k,v){
+        if(v !== "cb_cf_boards")
+            $("#"+v).removeAttr("disabled");
+    });
+    this.plugin_running = true;
+}
 
-        this.searchPlugin = function()
-        {
-            for (i = 0; i < navigator.plugins.length; i++)
-                if (navigator.plugins[i].name == "Codebender.cc" || navigator.plugins[i].name == "Codebendercc")
-                    this.plugin_found = true;
-            this.plugin_searched = true;
-        }
-
-        this.runPlugin = function()
-        {
-            url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
-            url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : true, "message": "Found on navigator plugins."} ));
-            $.get(url);
-            this.owner.setOperationOutput("<i class='icon-spinner icon-spin'></i>  Initializing Plugin... Make sure that you allow plugin execution on your browser. <a href='http://codebender.uservoice.com/knowledgebase/topics/57328-plugin'>More Info</a>");
-            this.owner.eventManager.fire("plugin_notification", "<i class='icon-spinner icon-spin'></i>  Initializing Plugin... Make sure that you allow plugin execution on your browser. <a href='http://codebender.uservoice.com/knowledgebase/topics/57328-plugin'>More Info</a>");
-            $("body").append('<object id="plugin0" type="application/x-codebendercc" width="0" height="0" xmlns="http://www.w3.org/1999/html"></object>');
-
-            var pl = this;
-            window.plugin_init_interval = setInterval(function(){
-                if(typeof document.getElementById('plugin0').probeUSB !== 'undefined')
-                {
-                    clearInterval(window.plugin_init_interval);
-
-                    pl.plugin_initialized = true;
-                    pl.plugin_version = document.getElementById('plugin0').version;
-                    window.plugin_version = pl.plugin_version;
-                    url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F35\x2FPLUGIN_META";
-                    url = url.replace("PLUGIN_META", JSON.stringify({ "plugin" : true, "version": document.getElementById('plugin0').version}) );
-                    $.get(url);
-
-                    pl.validateVersion(that.minVersion);
-                    if (typeof document.getElementById('plugin0').setErrorCallback !== 'undefined')
-                        document.getElementById('plugin0').setErrorCallback(pl.plugin_error_logger);
-
-                    if (typeof document.getElementById('plugin0').init !== 'undefined')
-                    {
-                        document.getElementById('plugin0').init();
-                        if (document.getElementById('plugin0').instance_id != 'undefined') {
-                            pl.tabID = parseInt(document.getElementById('plugin0').instance_id);
-                        }
-                    }
-
-                    if (typeof document.getElementById('plugin0').closeTab !== 'undefined')
-                    {
-                        $( window ).unload(function ()
-                        {
-                            document.getElementById('plugin0').closeTab();
-                            document.getElementById('plugin0').deleteMap();
-                        });
-                    }
-                    else
-                    {
-                        pl.disconnect();
-                    }
-
-                }
-            }, 100);
-        }
-
-        this.showPlugin = function()
-        {
-            this.owner.setOperationOutput("");
-            this.owner.eventManager.fire("plugin_running");
-            $.each(this.owner.loaded_elements, function(k,v){
-                if(v !== "cb_cf_boards")
-                    $("#"+v).removeAttr("disabled");
-            });
-            this.plugin_running = true;
-        }
-
-        this.parseVersionString = function(str) {
-            if (typeof(str) != 'string') {
-                return false;
-            }
-            var x = str.split('.');
+this.parseVersionString = function(str) {
+    if (typeof(str) != 'string') {
+        return false;
+    }
+    var x = str.split('.');
             // parse from string or default to 0 if can't parse
             var maj = parseInt(x[0]) || 0;
             var min = parseInt(x[1]) || 0;
@@ -429,16 +429,16 @@ compilerflasher = function(lf){
                         url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F34\x2FPLUGIN_META";
                         url = url.replace("PLUGIN_META", JSON.stringify({ "message" : "Non catchable plugin crash.", "version": (window.plugin_version === 'undefined' || window.plugin_version === null) ? "undefined" : window.plugin_version,
                             "OS": { "name": (typeof Browsers.os.name === 'undefined') ? 'undefined' : Browsers.os.name,
-                                "url":  window.location.pathname,
-                                "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
-                                "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original} }) );
+                            "url":  window.location.pathname,
+                            "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
+                            "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original} }) );
                         $.get(url);
                         clearInterval(window.PluginLoggingInterval);
                     }
                     else
                     {
                         if ((typeof document.getElementById('plugin0').availablePorts === 'undefined')
-                                &&((oldPortsAvail.length < portsAvail.length || (oldPortsAvail.length == 1 && portsAvail.length == 1 && oldPortsAvail[0] == "" && portsAvail[0] != ""))
+                            &&((oldPortsAvail.length < portsAvail.length || (oldPortsAvail.length == 1 && portsAvail.length == 1 && oldPortsAvail[0] == "" && portsAvail[0] != ""))
                                 ||(oldPortsAvail.length > portsAvail.length || (oldPortsAvail.length == 1 && portsAvail.length == 1 && oldPortsAvail[0] != "" && portsAvail[0] == ""))))
                         {
                             var ports = Object();
@@ -482,182 +482,182 @@ compilerflasher = function(lf){
                     $.get(url);
                 }
             }, 500);
-        }
+}
 
-        this.canBurnBootloader = function(programmer)
+this.canBurnBootloader = function(programmer)
+{
+    if (typeof this.portslist.options[this.portslist.selectedIndex] === 'undefined' && programmer['communication'] == 'serial') {
+        return false;
+    }
+    else
+        return true;
+
+}
+
+this.doflash = function(select, board, programmer, binary, flash_callback)
+{
+    if (select == true && typeof board["upload"]["protocol"] !== 'undefined')
+    {
+        if(typeof this.portslist. options[this.portslist.selectedIndex] === 'undefined')
         {
-            if (typeof this.portslist.options[this.portslist.selectedIndex] === 'undefined' && programmer['communication'] == 'serial') {
-                return false;
-            }
+            this.owner.eventManager.fire('flash_failed', "Could not connect to selected port. Make sure your board is properly connected.");
+            this.owner.setOperationOutput("Could not connect to selected port. Make sure your board is properly connected.");
+
+        }
+        else
+        {
+            var disable_flushing = ((typeof board["upload"]["disable_flushing"] === 'undefined') ? "" : board["upload"]["disable_flushing"]);
+            document.getElementById('plugin0').flash(this.portslist.options[this.portslist.selectedIndex].text, binary, board["upload"]["maximum_size"], board["upload"]["protocol"], disable_flushing, board["upload"]["speed"], board["build"]["mcu"], flash_callback);
+        }
+    }else
+    {
+        if(typeof programmer == "undefined")
+        {
+            this.owner.setOperationOutput("The selected device needs a programmer, and none was selected. Operation Aborted.");
+            this.owner.eventManager.fire('flash_failed', "Could not connect to selected port. Make sure your board is properly connected.");
+
+        }
+        else
+        {
+            var selectedPort = (typeof this.portslist.options[this.portslist.selectedIndex] === 'undefined') ? '' : this.portslist.options[this.portslist.selectedIndex].text;
+            document.getElementById('plugin0').flashWithProgrammer(selectedPort, binary, board["upload"]["maximum_size"], programmer["protocol"], programmer["communication"], programmer["speed"], programmer["force"], programmer["delay"], board["build"]["mcu"],
+                flash_callback);
+
+        }
+    }
+
+}
+
+this.canflash = function(board, programmer, useProgrammer){
+    if (programmer.communication == 'serial' &&
+        this.currentPorts.length == 0) {
+        return false;
+}
+
+useProgrammer = useProgrammer || false;
+if (($("#cb_cf_ports").val() != null && $("#cb_cf_ports").val() != "") || (($("#cb_cf_ports").val() == null || $("#cb_cf_ports").val() == "") && typeof board["upload"]["protocol"] === 'undefined') || useProgrammer) {
+
+    if (typeof this.portslist.options[this.portslist.selectedIndex] === 'undefined' && programmer["communication"] == "serial" && (typeof board["upload"]["protocol"] === 'undefined' || useProgrammer))
+    {
+
+        return false;
+    }
+
+    return true;
+}
+else {
+    return false;
+}
+}
+
+this.browserSpecificPluginInstall = function(alert)
+{
+
+    var location;
+    if (typeof window.location.origin === undefined)
+        location = window.location;
+    else
+        location = window.location.origin;
+
+    if(location.indexOf("codebender.cc") == -1)
+    {
+        alert+= '<a target="_blank" href = "https\x3A\x2F\x2Fcodebender.cc\x2Fstatic\x2Fplugin" >Learn more.</a>';
+    }
+    else
+    {
+        if(Browsers.isBrowser("Chrome") || Browsers.isBrowser("Chromium"))
+        {
+            if(Browsers.isOs('Windows','>=','6.2'))
+                alert+= '<a onclick=\'compilerflasher.pluginHandler.addTo("Windows", "\x2F\x2Fcodebender.cc\x2FCodebendercc.msi")\' id="msi-download-url" href = "javascript:void(0);" >Add to Windows.</a>';
             else
-                return true;
+                alert += "<a onclick='compilerflasher.pluginHandler.addTo(\"Chrome\")' href='https://chrome.google.com/webstore/detail/codebendercc-extension/fkjidelplakiboijmadcpcbpboihkmee' target='_blank'>Add to Chrome</a>";
 
         }
-
-        this.doflash = function(select, board, programmer, binary, flash_callback)
+        else if(Browsers.isBrowser("Firefox"))
         {
-            if (select == true && typeof board["upload"]["protocol"] !== 'undefined')
-            {
-                if(typeof this.portslist. options[this.portslist.selectedIndex] === 'undefined')
-                {
-                    this.owner.eventManager.fire('flash_failed', "Could not connect to selected port. Make sure your board is properly connected.");
-                    this.owner.setOperationOutput("Could not connect to selected port. Make sure your board is properly connected.");
-
-                }
-                else
-                {
-                    var disable_flushing = ((typeof board["upload"]["disable_flushing"] === 'undefined') ? "" : board["upload"]["disable_flushing"]);
-                    document.getElementById('plugin0').flash(this.portslist.options[this.portslist.selectedIndex].text, binary, board["upload"]["maximum_size"], board["upload"]["protocol"], disable_flushing, board["upload"]["speed"], board["build"]["mcu"], flash_callback);
-                }
-            }else
-            {
-                if(typeof programmer == "undefined")
-                {
-                    this.owner.setOperationOutput("The selected device needs a programmer, and none was selected. Operation Aborted.");
-                    this.owner.eventManager.fire('flash_failed', "Could not connect to selected port. Make sure your board is properly connected.");
-
-                }
-                else
-                {
-                    var selectedPort = (typeof this.portslist.options[this.portslist.selectedIndex] === 'undefined') ? '' : this.portslist.options[this.portslist.selectedIndex].text;
-                    document.getElementById('plugin0').flashWithProgrammer(selectedPort, binary, board["upload"]["maximum_size"], programmer["protocol"], programmer["communication"], programmer["speed"], programmer["force"], programmer["delay"], board["build"]["mcu"],
-                            flash_callback);
-
-                }
-            }
-
+            alert+= '<a onclick=\'compilerflasher.pluginHandler.addTo("Firefox", "\x2F\x2Fcodebender.cc\x2Fcodebender.xpi")\' id="xpi-download-url" href = "javascript:void(0);" >Add to Firefox.</a>';
         }
+    }
 
-        this.canflash = function(board, programmer, useProgrammer){
-            if (programmer.communication == 'serial' &&
-                this.currentPorts.length == 0) {
-                return false;
-            }
+    return alert;
+}
 
-            useProgrammer = useProgrammer || false;
-            if (($("#cb_cf_ports").val() != null && $("#cb_cf_ports").val() != "") || (($("#cb_cf_ports").val() == null || $("#cb_cf_ports").val() == "") && typeof board["upload"]["protocol"] === 'undefined') || useProgrammer) {
+this.addTo = function(where, pluginUrl)
+{
+    url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F45\x2FADD_TO_META";
+    url = url.replace("ADD_TO_META", JSON.stringify({ "where": where} ));
+    if (typeof (pluginUrl) === 'undefined')
+        $.get(url);
+    else
+    {
+        $.get(url).done(function(){
+            window.location.replace(pluginUrl);
+        });
+    }
+}
 
-                if (typeof this.portslist.options[this.portslist.selectedIndex] === 'undefined' && programmer["communication"] == "serial" && (typeof board["upload"]["protocol"] === 'undefined' || useProgrammer))
-                {
 
-                    return false;
-                }
+this.enableUSB = function()
+{
 
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
+    this.connected = false;
 
-        this.browserSpecificPluginInstall = function(alert)
+    this.serialMonitorVal = '';
+    this.serialMonitorToAppend = '';
+
+    this.portslist = $("#cb_cf_ports")[0];
+    this.oldPorts = null;
+
+    var pl = this;
+    setTimeout(function ()
+    {
+        pl.scan();
+    }, 200);
+
+
+    setTimeout(function ()
+    {
+        pl.loadPort();
+    }, 500);
+}
+
+this.getFire = function() {
+    try {
+        var ports = '';
+        if(typeof document.getElementById('plugin0').getPorts !== 'undefined')
         {
-
-            var location;
-            if (typeof window.location.origin === undefined)
-                location = window.location;
-            else
-                location = window.location.origin;
-
-            if(location.indexOf("codebender.cc") == -1)
-            {
-                alert+= '<a target="_blank" href = "https\x3A\x2F\x2Fcodebender.cc\x2Fstatic\x2Fplugin" >Learn more.</a>';
-            }
-            else
-            {
-                if(Browsers.isBrowser("Chrome") || Browsers.isBrowser("Chromium"))
-                {
-                    if(Browsers.isOs('Windows','>=','6.2'))
-                        alert+= '<a onclick=\'compilerflasher.pluginHandler.addTo("Windows", "\x2F\x2Fcodebender.cc\x2FCodebendercc.msi")\' id="msi-download-url" href = "javascript:void(0);" >Add to Windows.</a>';
-                    else
-                        alert += "<a onclick='compilerflasher.pluginHandler.addTo(\"Chrome\")' href='https://chrome.google.com/webstore/detail/codebendercc-extension/fkjidelplakiboijmadcpcbpboihkmee' target='_blank'>Add to Chrome</a>";
-
-                }
-                else if(Browsers.isBrowser("Firefox"))
-                {
-                    alert+= '<a onclick=\'compilerflasher.pluginHandler.addTo("Firefox", "\x2F\x2Fcodebender.cc\x2Fcodebender.xpi")\' id="xpi-download-url" href = "javascript:void(0);" >Add to Firefox.</a>';
-                }
-            }
-
-            return alert;
+            var jsonPorts = $.parseJSON(document.getElementById('plugin0').getPorts());
+            $.each(jsonPorts, function (index, elem){
+                ports += elem['port'];
+                if (index != Object.keys(jsonPorts).length - 1) ports += ',';
+            });
         }
+        else
+            ports = document.getElementById('plugin0').probeUSB();
 
-        this.addTo = function(where, pluginUrl)
-        {
-            url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F45\x2FADD_TO_META";
-            url = url.replace("ADD_TO_META", JSON.stringify({ "where": where} ));
-            if (typeof (pluginUrl) === 'undefined')
-                $.get(url);
-            else
-            {
-                $.get(url).done(function(){
-                    window.location.replace(pluginUrl);
-                });
-            }
+        if (this.oldPorts == null) {
+            this.logPorts();
+            this.oldPorts = '';
         }
-
-
-        this.enableUSB = function()
-        {
-
-            this.connected = false;
-
-            this.serialMonitorVal = '';
-            this.serialMonitorToAppend = '';
-
-            this.portslist = $("#cb_cf_ports")[0];
-            this.oldPorts = null;
-
-            var pl = this;
-            setTimeout(function ()
-            {
-                pl.scan();
-            }, 200);
-
-
-            setTimeout(function ()
-            {
-                pl.loadPort();
-            }, 500);
-        }
-
-        this.getFire = function() {
-            try {
-                var ports = '';
-                if(typeof document.getElementById('plugin0').getPorts !== 'undefined')
-                {
-                    var jsonPorts = $.parseJSON(document.getElementById('plugin0').getPorts());
-                    $.each(jsonPorts, function (index, elem){
-                        ports += elem['port'];
-                        if (index != Object.keys(jsonPorts).length - 1) ports += ',';
-                    });
-                }
-                else
-                    ports = document.getElementById('plugin0').probeUSB();
-
-                if (this.oldPorts == null) {
-                    this.logPorts();
-                    this.oldPorts = '';
-                }
-                if (ports != this.oldPorts) {
-                    $('#cb_cf_ports').find('option').remove();
-                    portsAvail = ports.split(",");
-                    this.currentPorts = [];
-                    for (var i = 0; i < portsAvail.length; i++) {
-                        if (portsAvail[i] != "") {
-                            this.portslist.options[i] = new Option(portsAvail[i], portsAvail[i], true, false);
-                            this.currentPorts.push(portsAvail[i]);
-                        }
-                    }
-
-                    this.oldPorts = ports;
-                    this.loadPort();
-                    this.logPorts();
+        if (ports != this.oldPorts) {
+            $('#cb_cf_ports').find('option').remove();
+            portsAvail = ports.split(",");
+            this.currentPorts = [];
+            for (var i = 0; i < portsAvail.length; i++) {
+                if (portsAvail[i] != "") {
+                    this.portslist.options[i] = new Option(portsAvail[i], portsAvail[i], true, false);
+                    this.currentPorts.push(portsAvail[i]);
                 }
             }
-            catch (err) {
-                $('#cb_cf_ports').find('option').remove();
-                this.oldPorts = ports;
+
+            this.oldPorts = ports;
+            this.loadPort();
+            this.logPorts();
+        }
+    }
+    catch (err) {
+        $('#cb_cf_ports').find('option').remove();
+        this.oldPorts = ports;
 
                 /*clearInterval(this.getFireInterval);
                 var alert = this.browserSpecificPluginInstall("To program your Arduino from your browser, install the Codebender Plugin. ");
@@ -685,56 +685,56 @@ compilerflasher = function(lf){
                         _pluginHandler.initializePlugin();
                     }
                 }, 500);*/
-            }
+}
+}
+
+
+this.scan = function() {
+
+    window.hasPerm = document.getElementById('plugin0').setCallback(function (from, output) {
+        if (output == "disconnect") {
+
+            compilerflasher.pluginHandler.disconnect(true);
+        } else
+        {
+            compilerflasher.eventManager.fire("plugin_notification", output);
+            compilerflasher.setOperationOutput(output);
         }
+    });
+
+    if (!window.hasPerm) {
+        compilerflasher.setOperationOutput("You need to grant permissions to the Codebender extension.");
+        compilerflasher.eventManager.fire('plugin_notification', "You need to grant permissions to the Codebender extension.");
+    }
 
 
-        this.scan = function() {
+    this.getFire();
+    var pl = this;
+    this.getFireInterval = setInterval(function () {
+        pl.getFire();
+    }, 1000);
+}
 
-                        window.hasPerm = document.getElementById('plugin0').setCallback(function (from, output) {
-                if (output == "disconnect") {
-
-                    compilerflasher.pluginHandler.disconnect(true);
-                } else
-                {
-                    compilerflasher.eventManager.fire("plugin_notification", output);
-                    compilerflasher.setOperationOutput(output);
-                }
-            });
-
-            if (!window.hasPerm) {
-                compilerflasher.setOperationOutput("You need to grant permissions to the Codebender extension.");
-                compilerflasher.eventManager.fire('plugin_notification', "You need to grant permissions to the Codebender extension.");
-            }
-
-
-            this.getFire();
-            var pl = this;
-            this.getFireInterval = setInterval(function () {
-                pl.getFire();
-            }, 1000);
-        }
-
-        this.show_alert = function(message, divname) {
-            alertElement = "<div id='";
-            alertElement += divname;
-            alertElement += "' class='alert'>";
+this.show_alert = function(message, divname) {
+    alertElement = "<div id='";
+    alertElement += divname;
+    alertElement += "' class='alert'>";
 //        alertElement += "<button type='button' class='close' data-dismiss='alert'>x</button>";
-            alertElement += message
-            alertElement += "</div>";
-            $("#cb_cf_ports_div .alert").hide(100).remove();
-            $("#cb_cf_ports_div").prepend(alertElement);
-        }
+alertElement += message
+alertElement += "</div>";
+$("#cb_cf_ports_div .alert").hide(100).remove();
+$("#cb_cf_ports_div").prepend(alertElement);
+}
 
         /*
          Serial Monitor functions
          */
-        var smoothie = new SmoothieChart({scaleSmoothing:0.605,maxValue:1024,minValue:0});
-        smoothie.streamTo(document.getElementById("mycanvas"),1000);
-        var line1 = new TimeSeries();
-        
-        var _that = this;
-        this.connect = function() {
+         var smoothie = new SmoothieChart({scaleSmoothing:0.605,maxValue:1024,minValue:0});
+         smoothie.streamTo(document.getElementById("mycanvas"),1000);
+         var line1 = new TimeSeries();
+
+         var _that = this;
+         this.connect = function() {
             speed = $("#cb_cf_baud_rates option:selected").val();
             if (this.connected == false) {
                 var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F18\x2FSERIAL_MONITOR_META";
@@ -752,27 +752,27 @@ compilerflasher = function(lf){
                     var pl = this;
                     var port = this.portslist.options[this.portslist.selectedIndex].text;
                     document.getElementById('plugin0').serialRead(
-                            this.portslist.options[this.portslist.selectedIndex].text,
-                            speed,
-                            function (from, line) {
-                                pl.serialHudAppendString(line);
-                            },
-                            function (from, line){
-                                var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F69\x2FPLUGIN_SERIAL_MONITOR_RETVAL_META";
-                                url = url.replace("PLUGIN_SERIAL_MONITOR_RETVAL_META", JSON.stringify({ "retVal" : line , "version": (window.plugin_version === 'undefined' || window.plugin_version === null) ? "undefined" : window.plugin_version,
-                                    "url":  window.location.pathname,
-                                    "OS": { "name": (typeof Browsers.os.name === 'undefined') ? 'undefined' : Browsers.os.name,
-                                        "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
-                                        "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original}}));
-                                $.get(url);
-                                var msg = compilerflasher.getFlashFailMessage(line);
-                                compilerflasher.setOperationOutput(msg);
-                                compilerflasher.eventManager.fire("plugin_notification", msg);
-                            }
-                    );
+                        this.portslist.options[this.portslist.selectedIndex].text,
+                        speed,
+                        function (from, line) {
+                            pl.serialHudAppendString(line);
+                        },
+                        function (from, line){
+                            var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F69\x2FPLUGIN_SERIAL_MONITOR_RETVAL_META";
+                            url = url.replace("PLUGIN_SERIAL_MONITOR_RETVAL_META", JSON.stringify({ "retVal" : line , "version": (window.plugin_version === 'undefined' || window.plugin_version === null) ? "undefined" : window.plugin_version,
+                                "url":  window.location.pathname,
+                                "OS": { "name": (typeof Browsers.os.name === 'undefined') ? 'undefined' : Browsers.os.name,
+                                "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
+                                "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original}}));
+                            $.get(url);
+                            var msg = compilerflasher.getFlashFailMessage(line);
+                            compilerflasher.setOperationOutput(msg);
+                            compilerflasher.eventManager.fire("plugin_notification", msg);
+                        }
+                        );
 
-                    this.serialMonitorToAppend = '';
-                    this.serialMonitorVal = '';
+this.serialMonitorToAppend = '';
+this.serialMonitorVal = '';
                     //$("#serial_hud").html(document.createTextNode(this.serialMonitorVal));
                     pl = this;
                     
@@ -799,9 +799,9 @@ compilerflasher = function(lf){
                             
                             pl.serialMonitorToAppend = '';
                             temp = document.createTextNode(pl.serialMonitorToAppend);
-                                                       
+
                             if($('#autoscroll_check').is(':checked'));
-                                $("#serial_hud").scrollTo(99999999);
+                            $("#serial_hud").scrollTo(99999999);
                         }
                         setInterval(function() {
                         	if(pl.serialMonitorToAppend != '')
@@ -814,44 +814,44 @@ compilerflasher = function(lf){
                         		line1.append(new Date().getTime(),temp);
                         		//$("#textarea_serialTest").html(document.createTextNode("0"));
                         	}
-                      	}, 1000);
+                        }, 1000);
                         
                     }, 50);
 
-                    if(typeof document.getElementById('plugin0').availablePorts !== 'undefined')
-                    {
-                        var ph = this;
-                        window.portValidatorInterval = setInterval(function ()
-                        {
-                            ports = document.getElementById('plugin0').availablePorts();
-                            if (ports.indexOf(port) == -1){
-                                clearInterval(window.portValidatorInterval);
-                                ph.disconnect(false);
-                            }
-                        },100);
-                    }
-                }
-                else {
-                    this.owner.setOperationOutput("Please select a valid port!!");
-                    this.owner.eventManager.fire('plugin_notification', "Please select a valid port!!");
-                }
-            } else {
-                this.disconnect();
-            }
+if(typeof document.getElementById('plugin0').availablePorts !== 'undefined')
+{
+    var ph = this;
+    window.portValidatorInterval = setInterval(function ()
+    {
+        ports = document.getElementById('plugin0').availablePorts();
+        if (ports.indexOf(port) == -1){
+            clearInterval(window.portValidatorInterval);
+            ph.disconnect(false);
         }
+    },100);
+}
+}
+else {
+    this.owner.setOperationOutput("Please select a valid port!!");
+    this.owner.eventManager.fire('plugin_notification', "Please select a valid port!!");
+}
+} else {
+    this.disconnect();
+}
+}
 
-        this.disconnect = function(notified) {
-        	line1.data = [];
-            notified = notified || false;
-            if (this.connected == true) {
-                if(notified == false)
-                {
-                    var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F59\x2FSERIAL_MONITOR_DISC_META";
-                    url = url.replace("SERIAL_MONITOR_DISC_META", JSON.stringify({ "baudrate" : $("#cb_cf_baud_rates option:selected").val(), "port": _that.serialMonitorPort, "tabID": this.tabID }));
-                    $.get(url);
-                }
+this.disconnect = function(notified) {
+ line1.data = [];
+ notified = notified || false;
+ if (this.connected == true) {
+    if(notified == false)
+    {
+        var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F59\x2FSERIAL_MONITOR_DISC_META";
+        url = url.replace("SERIAL_MONITOR_DISC_META", JSON.stringify({ "baudrate" : $("#cb_cf_baud_rates option:selected").val(), "port": _that.serialMonitorPort, "tabID": this.tabID }));
+        $.get(url);
+    }
 
-                _that.serialMonitorPort = null;
+    _that.serialMonitorPort = null;
 
                 // availablePorts is always defined after 1.6.0.7 (remove check?)
                 if(typeof document.getElementById('plugin0').availablePorts !== 'undefined')
@@ -942,8 +942,8 @@ compilerflasher = function(lf){
                     "url":  window.location.pathname,
                     "tabID": _that.tabID,
                     "OS": { "name": (typeof Browsers.os.name === 'undefined') ? 'undefined' : Browsers.os.name,
-                        "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
-                        "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original}}));
+                    "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
+                    "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original}}));
                 $.get(url);
             }
             else if(status ==1)
@@ -953,8 +953,8 @@ compilerflasher = function(lf){
                     "url":  window.location.pathname,
                     "tabID": _that.tabID,
                     "OS": { "name": (typeof Browsers.os.name === 'undefined') ? 'undefined' : Browsers.os.name,
-                        "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
-                        "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original}}));
+                    "version": (Browsers.os.version == null || typeof Browsers.os.version.original === 'undefined') ? 'undefined' : Browsers.os.version.original }, "Browser": { "name": (typeof Browsers.browser.name === 'undefined') ? 'undefined' : Browsers.browser.name,
+                    "version": (typeof Browsers.browser.version === 'undefined' || Browsers.browser.version == null) ? 'undefined' : Browsers.browser.version.original}}));
                 $.get(url);
             }
 
@@ -973,7 +973,7 @@ compilerflasher = function(lf){
     if($("button#cb_cf_verify_btn_blocks").length > 0)
     {
         $("#cb_cf_verify_btn_blocks").click(function(){
-        	arduinoCode();
+        	arduinoCode_blocks();
         	cb.verify();
         	$('#verifyModal').modal('show');
         });
@@ -982,7 +982,7 @@ compilerflasher = function(lf){
     if($("button#cb_cf_verify_btn_text").length > 0)
     {
         $("#cb_cf_verify_btn_text").click(function(){
-            arduinoCode();
+            arduinoCode_text();
             cb.verify();
             $('#verifyModal').modal('show');
         });
@@ -991,17 +991,17 @@ compilerflasher = function(lf){
     if($("select#cb_cf_boards").length > 0)
     {
         $("#cb_cf_boards").append($('<option></option>').html("Loading Boards..."))
-                .attr('disabled', 'disabled')
-                .click(function(){cb.clickedBoard()})
-                .change(function(){cb.saveBoard()});
+        .attr('disabled', 'disabled')
+        .click(function(){cb.clickedBoard()})
+        .change(function(){cb.saveBoard()});
         $.getJSON("https\x3A\x2F\x2Fcodebender.cc\x2Fboard\x2Flistboards", function(data){boardsListCallback(data)});
         this.loaded_elements.push("cb_cf_boards");
     }
     if($("select#cb_cf_ports").length > 0)
     {
         $("#cb_cf_ports").click(function(){cb.pluginHandler.clickedPort()})
-                .change(function(){cb.pluginHandler.savePort()})
-                .attr("disabled", "disabled");
+        .change(function(){cb.pluginHandler.savePort()})
+        .attr("disabled", "disabled");
 
         if($("#cb_cf_ports").data().pluginVersion)
             this.pluginHandler.minVersion = $("#cb_cf_ports").data().pluginVersion;
@@ -1011,29 +1011,34 @@ compilerflasher = function(lf){
     if($("button#cb_cf_flash_btn_blocks").length > 0)
     {
         $("#cb_cf_flash_btn_blocks")
-                .click(function(){            	
-                	$('#flashModal').modal('show');
-                	cb.usbflash();
-                });
-                //.attr("disabled", "disabled");;
+        .click(function(){
+
+         $('#flashModal').modal('show');
+        arduinoCode_blocks();
+            // cb.verify();
+         cb.usbflash();
+     });
+
         this.loaded_elements.push("cb_cf_flash_btn_blocks");
     }
     if($("button#cb_cf_flash_btn_text").length > 0)
     {
         $("#cb_cf_flash_btn_text")
-                .click(function(){              
-                    $('#flashModal').modal('show');
-                    cb.usbflash();
-                });
-                //.attr("disabled", "disabled");;
+        .click(function(){              
+         $('#flashModal').modal('show');
+         arduinoCode_text();
+            // cb.verify();
+         cb.usbflash();
+     });
+
         this.loaded_elements.push("cb_cf_flash_btn_text");
     }
     if($("select#cb_cf_programmers").length > 0)
     {
         $("#cb_cf_programmers").append($('<option></option>').html("Loading Programmers..."))
-                .attr('disabled', 'disabled')
-                .click(function(){cb.clickedProgrammer()})
-                .change(function(){cb.saveProgrammer()});
+        .attr('disabled', 'disabled')
+        .click(function(){cb.clickedProgrammer()})
+        .change(function(){cb.saveProgrammer()});
         $.getJSON("https\x3A\x2F\x2Fcodebender.cc\x2Fboard\x2Fprogrammers", function (data)
         {
             programmersListCallback(data)
@@ -1043,26 +1048,26 @@ compilerflasher = function(lf){
     if($("button#cb_cf_flash_with_prog_btn").length > 0)
     {
         $("#cb_cf_flash_with_prog_btn").click(function(){cb.usbflashWithProgrammer()})
-                .attr('disabled', 'disabled');
+        .attr('disabled', 'disabled');
         this.loaded_elements.push("cb_cf_flash_with_prog_btn");
     }
     if($("select#cb_cf_baud_rates").length > 0)
     {
         $("#cb_cf_baud_rates").append(
-        				"<option>19200</option>" +
-                        "<option>9600</option>" +                    
-                        "<option>28800</option>" +
-                        "<option>38400</option>" +
-                        "<option>57600</option>" +
-                        "<option>115200</option>")
-                .attr('disabled', 'disabled');
+            "<option>19200</option>" +
+            "<option>9600</option>" +                    
+            "<option>28800</option>" +
+            "<option>38400</option>" +
+            "<option>57600</option>" +
+            "<option>115200</option>")
+        .attr('disabled', 'disabled');
 
         this.loaded_elements.push("cb_cf_baud_rates");
     }
     if($("button#cb_cf_serial_monitor_connect").length > 0)
     {
         $("#cb_cf_serial_monitor_connect").click(function(){cb.pluginHandler.connect()})
-                .attr('disabled', 'disabled');
+        .attr('disabled', 'disabled');
         this.loaded_elements.push("cb_cf_serial_monitor_connect");
     }
     if($("#cb_cf_serial_monitor").length > 0)
@@ -1073,7 +1078,7 @@ compilerflasher = function(lf){
     if($("#cb_cf_burn_bootloader").length > 0)
     {
         $("#cb_cf_burn_bootloader").click(function(){cb.burn_bootloader();})
-                .attr('disabled', 'disabled');
+        .attr('disabled', 'disabled');
         this.loaded_elements.push("cb_cf_burn_bootloader");
     }
 
@@ -1116,17 +1121,17 @@ compilerflasher = function(lf){
         var cb = this;
         if(typeof Lawnchair !== 'undefined')
         {
-        Lawnchair(function () {
-            this.exists('board', function (exists) {
-                if (exists) {
-                    this.get('board', function (config) {
-                        $("#cb_cf_boards").val(config.name)
-                    })
-                }
+            Lawnchair(function () {
+                this.exists('board', function (exists) {
+                    if (exists) {
+                        this.get('board', function (config) {
+                            $("#cb_cf_boards").val(config.name)
+                        })
+                    }
 
-                cb.selectedBoard = cb.boards_list[$("#cb_cf_boards").prop("selectedIndex")];
+                    cb.selectedBoard = cb.boards_list[$("#cb_cf_boards").prop("selectedIndex")];
+                });
             });
-        });
         }
         else
         {
@@ -1233,8 +1238,8 @@ compilerflasher = function(lf){
             /* We have to append a newline in every file, in order
              * to follow closely the behavior of the original Arduino IDE and
              * keep the clang auto-completer happy! */
-            files_array[count++] = {"filename":i, "content":$("<div/>").html(val).text() + '\n'};
-        });
+             files_array[count++] = {"filename":i, "content":$("<div/>").html(val).text() + '\n'};
+         });
 
         if(logging)
             var payload = {"files":files_array, "logging":logging, "format":format, "version":"105", "build":compilerflasher.selectedBoard["build"]};
@@ -1333,7 +1338,7 @@ compilerflasher = function(lf){
         {
             var cb = this;
             this.eventManager.fire('pre_flash');
-            this.setOperationOutput("<i class='icon-spinner icon-spin'> </i> Working...");
+            this.setOperationOutput("Working...");
             this.getbin(function(obj){
                 if (obj.success == 0) {
                     cb.setOperationOutput("There was an error compiling.")
@@ -1362,184 +1367,184 @@ compilerflasher = function(lf){
                     }
                 }
             })
-        }
-        else
-        {
-        	$('#startupModal').modal('show');
-            this.setOperationOutput("Please select a valid port!");
-            this.eventManager.fire("plugin_notification", "Please select a valid port!!");
-        }
+}
+else
+{
+ $('#startupModal').modal('show');
+ this.setOperationOutput("Please select a valid port!");
+ this.eventManager.fire("plugin_notification", "Please select a valid port!!");
+}
 
-    }
+}
 
 
-    this.usbflashWithProgrammer = function()
+this.usbflashWithProgrammer = function()
+{
+    url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F41\x2FRUN_WITH_PROG_BUTTON_META";
+    url = url.replace("RUN_WITH_PROG_BUTTON_META", JSON.stringify({ "port":$("#cb_cf_ports").val(), "board":$("#cb_cf_boards option:selected").text(), "programmer":$("#cb_cf_programmers option:selected").text(), "tabID": this.pluginHandler.tabID } ));
+    $.get(url);
+
+    if(this.pluginHandler.canflash(this.selectedBoard, this.selectedProgrammer, true))
     {
-        url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F41\x2FRUN_WITH_PROG_BUTTON_META";
-        url = url.replace("RUN_WITH_PROG_BUTTON_META", JSON.stringify({ "port":$("#cb_cf_ports").val(), "board":$("#cb_cf_boards option:selected").text(), "programmer":$("#cb_cf_programmers option:selected").text(), "tabID": this.pluginHandler.tabID } ));
-        $.get(url);
-
-        if(this.pluginHandler.canflash(this.selectedBoard, this.selectedProgrammer, true))
-        {
-            var cb = this;
-            this.eventManager.fire('pre_flash');
-            this.setOperationOutput("<i class='icon-spinner icon-spin'> </i> Working...");
-            this.getbin(function(obj){
-                if (obj.success == 0) {
-                    cb.setOperationOutput("There was an error compiling.")
-                    cb.eventManager.fire('verification_failed', obj.message);
-                }
-                else
-                {
-                    cb.eventManager.fire('mid_flash', obj.size);
-
-                    if (cb.pluginHandler.connected == true)
-                    {
-                        cb.pluginHandler.disconnect(false);
-                        setTimeout(function(){
-                            cb.pluginHandler.doflash(false, cb.selectedBoard, cb.selectedProgrammer, obj['output'], cb.flash_callback);
-                        }, 200);
-                    } else {
-                        cb.pluginHandler.doflash(false, cb.selectedBoard, cb.selectedProgrammer, obj['output'], cb.flash_callback);
-                    }
-                }
-            })
-        }
-        else
-        {
-            this.setOperationOutput("Please select a valid port for the programmer!");
-            this.eventManager.fire('plugin_notification', "Please select a valid port for the programmer!");
-        }
-    }
-
-
-    this.getbin = function(callback) {
-        var payload = this.generate_payload("binary");
         var cb = this;
-        $.post("https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Fcompile\x2F", payload, function (data) {
-            try{
-                var obj = jQuery.parseJSON(data);
-                callback(obj);
-            }
-            catch(err){
-                cb.setOperationOutput('<i class="icon-remove"></i> Unexpected error occurred. Try again later.');
-                cb.eventManager.fire('verification_failed', '<i class="icon-remove"></i> Unexpected error occurred. Try again later.');
-            }
-        })
-                .fail(function() {
-                    cb.setOperationOutput("Connection to server failed.");
-                    cb.eventManager.fire('verification_failed', "Connection to server failed.");
-                });
-    }
-
-    this.verify =  function() {
-
-        var board = $("#cb_cf_boards option:selected").text();
-        url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F47\x2FVERIFY_META";
-        url = url.replace("VERIFY_META", JSON.stringify({ "selectedBoard": board, "tabID": this.pluginHandler.tabID} ));
-        $.get(url);
-
-        this.eventManager.fire('pre_verify');
+        this.eventManager.fire('pre_flash');
         this.setOperationOutput("<i class='icon-spinner icon-spin'> </i> Working...");
-        var cb = this;
         this.getbin(function(obj){
             if (obj.success == 0) {
-                cb.setOperationOutput("Verification failed.");
+                cb.setOperationOutput("There was an error compiling.")
                 cb.eventManager.fire('verification_failed', obj.message);
             }
             else
             {
-                cb.setOperationOutput("Verification Successful");
-                cb.eventManager.fire('verification_succeed', obj.size);
-            }
-        });
+                cb.eventManager.fire('mid_flash', obj.size);
 
+                if (cb.pluginHandler.connected == true)
+                {
+                    cb.pluginHandler.disconnect(false);
+                    setTimeout(function(){
+                        cb.pluginHandler.doflash(false, cb.selectedBoard, cb.selectedProgrammer, obj['output'], cb.flash_callback);
+                    }, 200);
+                } else {
+                    cb.pluginHandler.doflash(false, cb.selectedBoard, cb.selectedProgrammer, obj['output'], cb.flash_callback);
+                }
+            }
+        })
     }
+    else
+    {
+        this.setOperationOutput("Please select a valid port for the programmer!");
+        this.eventManager.fire('plugin_notification', "Please select a valid port for the programmer!");
+    }
+}
 
-   
-    this.burn_bootloader = function() {
-        
 
-        if(this.pluginHandler.canBurnBootloader(this.selectedProgrammer))
-        {
-            var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F25\x2FUPLOAD_BOOTLOADER_META";
-            url = url.replace("UPLOAD_BOOTLOADER_META", JSON.stringify({ "programmer" : $('#programmer option:selected').val(),
-                "board" : $('#cb_cf_boards option:selected').val(), "port" : $('#cb_cf_ports option:selected').val(),
-                "bootloader_file" : ((typeof this.selectedBoard['bootloader']['file']) === "undefined") ? "undefined" : this.selectedBoard['bootloader']['file'] }) );
-            $.get(url);
+this.getbin = function(callback) {
+    var payload = this.generate_payload("binary");
+    var cb = this;
+    $.post("https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Fcompile\x2F", payload, function (data) {
+        try{
+            var obj = jQuery.parseJSON(data);
+            callback(obj);
+        }
+        catch(err){
+            cb.setOperationOutput('<i class="icon-remove"></i> Unexpected error occurred. Try again later.');
+            cb.eventManager.fire('verification_failed', '<i class="icon-remove"></i> Unexpected error occurred. Try again later.');
+        }
+    })
+    .fail(function() {
+        cb.setOperationOutput("Connection to server failed.");
+        cb.eventManager.fire('verification_failed', "Connection to server failed.");
+    });
+}
 
-            this.setOperationOutput("<i class='icon-spinner icon-spin'></i> Working...")
-            if (typeof this.selectedBoard['bootloader']['file'] === "undefined")
-            {
-                document.getElementById('plugin0').saveToHex("");
-                window.result = this.pluginHandler.doflashBootloader(this.selectedProgrammer, this.selectedBoard);
-            }
-            else
-            {
-                var cb = this;
-                $.get("\x2Fbootloader\x2F" + this.selectedBoard['bootloader']['file'].replace(".hex", ".txt"))
-                        .success(function(data){
-                            document.getElementById('plugin0').saveToHex(data);
-                            window.result = cb.pluginHandler.doflashBootloader(cb.selectedProgrammer, cb.selectedBoard);
-                        })
-                        .error(function(){
-                                                        cb.setOperationOutput("The bootloader file was not found.");
-                        });
+this.verify =  function() {
 
-            }
+    var board = $("#cb_cf_boards option:selected").text();
+    url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F47\x2FVERIFY_META";
+    url = url.replace("VERIFY_META", JSON.stringify({ "selectedBoard": board, "tabID": this.pluginHandler.tabID} ));
+    $.get(url);
+
+    this.eventManager.fire('pre_verify');
+    this.setOperationOutput("<i class='icon-spinner icon-spin'> </i> Working...");
+    var cb = this;
+    this.getbin(function(obj){
+        if (obj.success == 0) {
+            cb.setOperationOutput("Verification failed.");
+            cb.eventManager.fire('verification_failed', obj.message);
         }
         else
         {
-            this.setOperationOutput("Please select a valid port!")
+            cb.setOperationOutput("Verification Successful");
+            cb.eventManager.fire('verification_succeed', obj.size);
         }
+    });
 
-    }
+}
 
-    this.serial_monitor_disabled = false;
-    this.disableCompilerFlasherActions = function(){
-        $("#cb_cf_boards").attr("disabled", "disabled");
-        $("#cb_cf_verify_btn_blocks").attr("disabled", "disabled");
-        $("#cb_cf_verify_btn_text").attr("disabled", "disabled");
-        if(compilerflasher.pluginHandler.plugin_running)
+
+this.burn_bootloader = function() {
+
+
+    if(this.pluginHandler.canBurnBootloader(this.selectedProgrammer))
+    {
+        var url = "https\x3A\x2F\x2Fcodebender.cc\x2Futilities\x2Flogdb\x2F25\x2FUPLOAD_BOOTLOADER_META";
+        url = url.replace("UPLOAD_BOOTLOADER_META", JSON.stringify({ "programmer" : $('#programmer option:selected').val(),
+            "board" : $('#cb_cf_boards option:selected').val(), "port" : $('#cb_cf_ports option:selected').val(),
+            "bootloader_file" : ((typeof this.selectedBoard['bootloader']['file']) === "undefined") ? "undefined" : this.selectedBoard['bootloader']['file'] }) );
+        $.get(url);
+
+        this.setOperationOutput("<i class='icon-spinner icon-spin'></i> Working...")
+        if (typeof this.selectedBoard['bootloader']['file'] === "undefined")
         {
-            $("#cb_cf_ports").attr("disabled", "disabled");
-            $("#cb_cf_flash_btn_blocks").attr("disabled", "disabled");
-            $("#cb_cf_flash_btn_text").attr("disabled", "disabled");
-            $("#cb_cf_programmers").attr("disabled", "disabled");
-            $("#cb_cf_flash_with_prog_btn").attr("disabled", "disabled");
-            $("#cb_cf_baud_rates").attr("disabled", "disabled");
-            $("#cb_cf_serial_monitor_connect").attr("disabled", "disabled");
-            that.serial_monitor_disabled = true;
+            document.getElementById('plugin0').saveToHex("");
+            window.result = this.pluginHandler.doflashBootloader(this.selectedProgrammer, this.selectedBoard);
         }
-
-    }
-
-    this.enableCompilerFlasherActions = function(){
-        $("#cb_cf_boards").removeAttr("disabled");
-        $("#cb_cf_verify_btn_text").removeAttr("disabled");
-        $("#cb_cf_verify_btn_blocks").removeAttr("disabled");
-        if(compilerflasher.pluginHandler.plugin_running)
+        else
         {
-            $("#cb_cf_ports").removeAttr("disabled");
-            $("#cb_cf_flash_btn_text").removeAttr("disabled");
-            $("#cb_cf_flash_btn_blocks").removeAttr("disabled");
-            $("#cb_cf_programmers").removeAttr("disabled");
-            $("#cb_cf_flash_with_prog_btn").removeAttr("disabled");
-            $("#cb_cf_baud_rates").removeAttr("disabled");
-            $("#cb_cf_serial_monitor_connect").removeAttr("disabled");
-            that.serial_monitor_disabled = false;
+            var cb = this;
+            $.get("\x2Fbootloader\x2F" + this.selectedBoard['bootloader']['file'].replace(".hex", ".txt"))
+            .success(function(data){
+                document.getElementById('plugin0').saveToHex(data);
+                window.result = cb.pluginHandler.doflashBootloader(cb.selectedProgrammer, cb.selectedBoard);
+            })
+            .error(function(){
+                cb.setOperationOutput("The bootloader file was not found.");
+            });
+
         }
     }
+    else
+    {
+        this.setOperationOutput("Please select a valid port!")
+    }
 
-    this.on("pre_verify", this.disableCompilerFlasherActions);
-    this.on("verification_succeed", this.enableCompilerFlasherActions);
-    this.on("verification_failed", this.enableCompilerFlasherActions);
-    this.on("pre_flash", this.disableCompilerFlasherActions);
-    this.on("flash_failed", this.enableCompilerFlasherActions);
-    this.on("flash_succeed", this.enableCompilerFlasherActions);
-    this.on("pre_hex", this.disableCompilerFlasherActions);
-    this.on("hex_succeed", this.enableCompilerFlasherActions);
-    this.on("hex_failed", this.enableCompilerFlasherActions);
+}
+
+this.serial_monitor_disabled = false;
+this.disableCompilerFlasherActions = function(){
+    $("#cb_cf_boards").attr("disabled", "disabled");
+    $("#cb_cf_verify_btn_blocks").attr("disabled", "disabled");
+    $("#cb_cf_verify_btn_text").attr("disabled", "disabled");
+    if(compilerflasher.pluginHandler.plugin_running)
+    {
+        $("#cb_cf_ports").attr("disabled", "disabled");
+        $("#cb_cf_flash_btn_blocks").attr("disabled", "disabled");
+        $("#cb_cf_flash_btn_text").attr("disabled", "disabled");
+        $("#cb_cf_programmers").attr("disabled", "disabled");
+        $("#cb_cf_flash_with_prog_btn").attr("disabled", "disabled");
+        $("#cb_cf_baud_rates").attr("disabled", "disabled");
+        $("#cb_cf_serial_monitor_connect").attr("disabled", "disabled");
+        that.serial_monitor_disabled = true;
+    }
+
+}
+
+this.enableCompilerFlasherActions = function(){
+    $("#cb_cf_boards").removeAttr("disabled");
+    $("#cb_cf_verify_btn_text").removeAttr("disabled");
+    $("#cb_cf_verify_btn_blocks").removeAttr("disabled");
+    if(compilerflasher.pluginHandler.plugin_running)
+    {
+        $("#cb_cf_ports").removeAttr("disabled");
+        $("#cb_cf_flash_btn_text").removeAttr("disabled");
+        $("#cb_cf_flash_btn_blocks").removeAttr("disabled");
+        $("#cb_cf_programmers").removeAttr("disabled");
+        $("#cb_cf_flash_with_prog_btn").removeAttr("disabled");
+        $("#cb_cf_baud_rates").removeAttr("disabled");
+        $("#cb_cf_serial_monitor_connect").removeAttr("disabled");
+        that.serial_monitor_disabled = false;
+    }
+}
+
+this.on("pre_verify", this.disableCompilerFlasherActions);
+this.on("verification_succeed", this.enableCompilerFlasherActions);
+this.on("verification_failed", this.enableCompilerFlasherActions);
+this.on("pre_flash", this.disableCompilerFlasherActions);
+this.on("flash_failed", this.enableCompilerFlasherActions);
+this.on("flash_succeed", this.enableCompilerFlasherActions);
+this.on("pre_hex", this.disableCompilerFlasherActions);
+this.on("hex_succeed", this.enableCompilerFlasherActions);
+this.on("hex_failed", this.enableCompilerFlasherActions);
 
 
 };
@@ -1563,7 +1568,7 @@ function boardsListCallback(data) {
     }
     if(!found)
     {
-                for (var i = 0; i < compilerflasher.boards_list.length; i++)
+        for (var i = 0; i < compilerflasher.boards_list.length; i++)
             $("#cb_cf_boards").append($('<option></option>').val(compilerflasher.boards_list[i]["name"]).html(compilerflasher.boards_list[i]["name"]));
         compilerflasher.loadBoard();
 
@@ -1585,7 +1590,7 @@ function programmersListCallback(data){
     for (var i = 0; i < compilerflasher.programmers_list.length; i++)
         $("#cb_cf_programmers").append($('<option></option>').val(compilerflasher.programmers_list[i]["name"]).html(compilerflasher.programmers_list[i]["name"]));
     compilerflasher.loadProgrammer();
-    }
+}
 
 function logging()
 {
@@ -1599,28 +1604,28 @@ function logging()
 }
 
 window.flashing_errors =
-	{
-		1:"Could not connect to your device. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
-		256:"Could not connect to your device. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
-		259:"Could not program your device, the process timed out. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
-		"-1":"Couldn’t find an Arduino on the selected port. If you are using Leonardo check that you have the correct port selected. If it is correct, try pressing the board’s reset button after initiating the upload",
-		"-2":"There was a problem programming your Arduino. If you are using a non-English Windows version, or username please contact us.",
-		"-204":"Could not program your device, the process timed out. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
-		"-22":"The selected port seems to be in use. Please check your board connection, and make sure that you are not using it from some other application, you don't have an open serial monitor.",
-        "-23":"Another flashing process is still active. Please wait until it is done and try again.",
-        "-55":"The specified port might not be available. Please check if it is used by another application. If the problem persists, unplug your device and plug it again.",
-        "-56":"The specified port is in use or you do not have enough permissions to use the device. Please check if it is used by another application or correct its permissions.",
-        "-57":"The specified port might not be available. Please check if it is used by another application. If the problem persists, unplug your device and plug it again.",
-        "126":"Something seems to be wrong with the plugin installation. You need to install the plugin again.",
-        "127":"Something seems to be wrong with the plugin installation. You need to install the plugin again.",
-        "-200":"There was a problem during the flashing process. Please try again, or contact us if the problem persists.",
-        100 :"Could not connect to your device. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
-        32001:"The selected port seems to be in use. Please make sure that you are not using it from some other program.",
-        33005:"This baudrate is not supported by the operating system.",
-        2001:"The selected port seems to be in use. Please make sure that you are not using it from some other program.",
-        3005:"This baudrate is not supported by the operating system."
+{
+  1:"Could not connect to your device. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
+  256:"Could not connect to your device. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
+  259:"Could not program your device, the process timed out. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
+  "-1":"Couldn’t find an Arduino on the selected port. If you are using Leonardo check that you have the correct port selected. If it is correct, try pressing the board’s reset button after initiating the upload",
+  "-2":"There was a problem programming your Arduino. If you are using a non-English Windows version, or username please contact us.",
+  "-204":"Could not program your device, the process timed out. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
+  "-22":"The selected port seems to be in use. Please check your board connection, and make sure that you are not using it from some other application, you don't have an open serial monitor.",
+  "-23":"Another flashing process is still active. Please wait until it is done and try again.",
+  "-55":"The specified port might not be available. Please check if it is used by another application. If the problem persists, unplug your device and plug it again.",
+  "-56":"The specified port is in use or you do not have enough permissions to use the device. Please check if it is used by another application or correct its permissions.",
+  "-57":"The specified port might not be available. Please check if it is used by another application. If the problem persists, unplug your device and plug it again.",
+  "126":"Something seems to be wrong with the plugin installation. You need to install the plugin again.",
+  "127":"Something seems to be wrong with the plugin installation. You need to install the plugin again.",
+  "-200":"There was a problem during the flashing process. Please try again, or contact us if the problem persists.",
+  100 :"Could not connect to your device. Make sure that you have connected it properly, that you have selected the correct settings (device type and port) and try again.",
+  32001:"The selected port seems to be in use. Please make sure that you are not using it from some other program.",
+  33005:"This baudrate is not supported by the operating system.",
+  2001:"The selected port seems to be in use. Please make sure that you are not using it from some other program.",
+  3005:"This baudrate is not supported by the operating system."
 
-    };
+};
 
     //Scrolling function
     (function ($) {
@@ -1658,50 +1663,50 @@ window.flashing_errors =
                 switch (typeof targ) {
                     case'number':
                     case'string':
-                        if (/^([+-]=)?\d+(\.\d+)?(px|%)?$/.test(targ)) {
-                            targ = both(targ);
-                            break
-                        }
-                        targ = $(targ, this);
-                        if (!targ.length)return;
+                    if (/^([+-]=)?\d+(\.\d+)?(px|%)?$/.test(targ)) {
+                        targ = both(targ);
+                        break
+                    }
+                    targ = $(targ, this);
+                    if (!targ.length)return;
                     case'object':
-                        if (targ.is || targ.style)toff = (targ = $(targ)).offset()
+                    if (targ.is || targ.style)toff = (targ = $(targ)).offset()
                 }
-                $.each(g.axis.split(''), function (i, a) {
-                    var b = a == 'x' ? 'Left' : 'Top', pos = b.toLowerCase(), key = 'scroll' + b, old = d[key], max = h.max(d, a);
-                    if (toff) {
-                        attr[key] = toff[pos] + (win ? 0 : old - $elem.offset()[pos]);
-                        if (g.margin) {
-                            attr[key] -= parseInt(targ.css('margin' + b)) || 0;
-                            attr[key] -= parseInt(targ.css('border' + b + 'Width')) || 0
-                        }
-                        attr[key] += g.offset[pos] || 0;
-                        if (g.over[pos])attr[key] += targ[a == 'x' ? 'width' : 'height']() * g.over[pos]
-                    } else {
-                        var c = targ[pos];
-                        attr[key] = c.slice && c.slice(-1) == '%' ? parseFloat(c) / 100 * max : c
+            $.each(g.axis.split(''), function (i, a) {
+                var b = a == 'x' ? 'Left' : 'Top', pos = b.toLowerCase(), key = 'scroll' + b, old = d[key], max = h.max(d, a);
+                if (toff) {
+                    attr[key] = toff[pos] + (win ? 0 : old - $elem.offset()[pos]);
+                    if (g.margin) {
+                        attr[key] -= parseInt(targ.css('margin' + b)) || 0;
+                        attr[key] -= parseInt(targ.css('border' + b + 'Width')) || 0
                     }
-                    if (g.limit && /^\d+$/.test(attr[key]))attr[key] = attr[key] <= 0 ? 0 : Math.min(attr[key], max);
-                    if (!i && g.queue) {
-                        if (old != attr[key])animate(g.onAfterFirst);
-                        delete attr[key]
-                    }
-                });
-                animate(g.onAfter);
-                function animate(a) {
-                    $elem.animate(attr, f, g.easing, a && function () {
-                        a.call(this, e, g)
-                    })
+                    attr[key] += g.offset[pos] || 0;
+                    if (g.over[pos])attr[key] += targ[a == 'x' ? 'width' : 'height']() * g.over[pos]
+                } else {
+                    var c = targ[pos];
+                    attr[key] = c.slice && c.slice(-1) == '%' ? parseFloat(c) / 100 * max : c
                 }
-            }).end()
-        };
-        h.max = function (a, b) {
-            var c = b == 'x' ? 'Width' : 'Height', scroll = 'scroll' + c;
-            if (!$(a).is('html,body'))return a[scroll] - $(a)[c.toLowerCase()]();
-            var d = 'client' + c, html = a.ownerDocument.documentElement, body = a.ownerDocument.body;
-            return Math.max(html[scroll], body[scroll]) - Math.min(html[d], body[d])
-        };
-        function both(a) {
-            return typeof a == 'object' ? a : {top:a, left:a}
-        }
-    })(jQuery);
+                if (g.limit && /^\d+$/.test(attr[key]))attr[key] = attr[key] <= 0 ? 0 : Math.min(attr[key], max);
+                if (!i && g.queue) {
+                    if (old != attr[key])animate(g.onAfterFirst);
+                    delete attr[key]
+                }
+            });
+animate(g.onAfter);
+function animate(a) {
+    $elem.animate(attr, f, g.easing, a && function () {
+        a.call(this, e, g)
+    })
+}
+}).end()
+};
+h.max = function (a, b) {
+    var c = b == 'x' ? 'Width' : 'Height', scroll = 'scroll' + c;
+    if (!$(a).is('html,body'))return a[scroll] - $(a)[c.toLowerCase()]();
+    var d = 'client' + c, html = a.ownerDocument.documentElement, body = a.ownerDocument.body;
+    return Math.max(html[scroll], body[scroll]) - Math.min(html[d], body[d])
+};
+function both(a) {
+    return typeof a == 'object' ? a : {top:a, left:a}
+}
+})(jQuery);
