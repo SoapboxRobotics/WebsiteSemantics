@@ -429,3 +429,20 @@ Blockly.Blocks['logic_ternary'] = {
     this.setTooltip(Blockly.Msg.LOGIC_TERNARY_TOOLTIP);
   }
 };
+
+Blockly.Blocks['controls_switch'] = {
+  /**
+   * Mutator block for if container.
+   * @this Blockly.Block
+   */
+  init: function() {
+    this.setColour(Blockly.Blocks.logic.HUE);
+    this.appendDummyInput()
+        .appendField("Switch");
+    this.appendStatementInput('STACK');
+    //this.setTooltip(Blockly.Msg.CONTROLS_IF_IF_TOOLTIP);
+    this.contextMenu = false;
+    this.setPreviousStatement = true;
+    this.setNextStatement = true;
+  }
+};

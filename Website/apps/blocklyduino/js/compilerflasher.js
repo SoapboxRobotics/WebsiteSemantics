@@ -972,8 +972,12 @@ this.disconnect = function(notified) {
     }
     if($("button#cb_cf_verify_btn_blocks").length > 0)
     {
+<<<<<<< Updated upstream
         $("#cb_cf_verify_btn_blocks").click(function(){
         	arduinoCode_blocks();
+=======
+        $("#cb_cf_verify_btn").click(function(){
+>>>>>>> Stashed changes
         	cb.verify();
         	$('#verifyModal').modal('show');
         });
